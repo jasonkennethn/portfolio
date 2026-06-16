@@ -1,0 +1,27 @@
+# Virtual Environment
+env/
+venv/
+.venv/
+ENV/
+
+# Environment configurations
+.env
+*.env
+backend/.env
+
+
+# Python Cache
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Database
+backend/db.sqlite3
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+
+# OS Files
+.DS_Store
+Thumbs.db
