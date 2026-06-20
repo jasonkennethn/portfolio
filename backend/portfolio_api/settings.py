@@ -101,6 +101,11 @@ CLOUDINARY_STORAGE = {
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
+
+# PythonAnywhere free accounts require routing outbound traffic through a proxy
+if os.environ.get('CLOUDINARY_API_PROXY'):
+    CLOUDINARY_STORAGE['API_PROXY'] = os.environ.get('CLOUDINARY_API_PROXY')
+
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
