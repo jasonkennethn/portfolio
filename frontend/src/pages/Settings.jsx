@@ -6,7 +6,10 @@ import {
   createProject, updateProject, deleteProject,
   createExperience, updateExperience, deleteExperience,
   createEducation, updateEducation, deleteEducation,
-  createCertification, updateCertification, deleteCertification
+  createCertification, updateCertification, deleteCertification,
+  createSkill, updateSkill, deleteSkill,
+  createAchievement, updateAchievement, deleteAchievement,
+  createStat, updateStat, deleteStat
 } from '../api/portfolio';
 import { useCallback } from 'react';
 import { enhanceText } from '../api/ai';
@@ -468,12 +471,36 @@ function ProfilePanel({ draftProfile, onFieldChange, onSave }) {
 // 3. Section Architecture & Reordering (Drag and drop reordering)
 
 function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
+  const { profile, projects, experiences, education, certifications, achievements, stats, skills } = usePortfolio();
   const [editingSection, setEditingSection] = useState(null);
   const [draggingKey, setDraggingKey] = useState(null);
   const [dragOverKey, setDragOverKey] = useState(null);
   const [renamingKey, setRenamingKey] = useState(null);
   const [renameValue, setRenameValue] = useState('');
   const [applying, setApplying] = useState(false);
+
+  const getSectionSummary = (key) => {
+    switch (key) {
+      case 'hero':
+        return profile ? `Profile: ${profile.name} (${profile.title})` : 'No profile data';
+      case 'projects':
+        return projects && projects.length ? `${projects.length} project${projects.length !== 1 ? 's' : ''}: ${projects.map(p => p.title).join(', ')}` : 'No projects';
+      case 'experience':
+        return experiences && experiences.length ? `${experiences.length} experience${experiences.length !== 1 ? 's' : ''}: ${experiences.map(e => e.company).join(', ')}` : 'No experiences';
+      case 'education':
+        return education && education.length ? `${education.length} education entry${education.length !== 1 ? 'ies' : ''}: ${education.map(e => e.institution).join(', ')}` : 'No education entries';
+      case 'certifications':
+        return certifications && certifications.length ? `${certifications.length} certificate${certifications.length !== 1 ? 's' : ''}: ${certifications.map(c => c.name).join(', ')}` : 'No certificates';
+      case 'achievements':
+        return achievements && achievements.length ? `${achievements.length} achievement${achievements.length !== 1 ? 's' : ''}: ${achievements.map(a => a.title).join(', ')}` : 'No achievements';
+      case 'stats':
+        return stats && stats.length ? `${stats.length} stat${stats.length !== 1 ? 's' : ''}: ${stats.map(s => s.label).join(', ')}` : 'No stats';
+      case 'expertise':
+        return skills && skills.length ? `${skills.length} skill${skills.length !== 1 ? 's' : ''}: ${skills.slice(0, 8).map(s => s.name).join(', ')}${skills.length > 8 ? '...' : ''}` : 'No skills';
+      default:
+        return null;
+    }
+  };
 
   const handleApply = async () => {
     setApplying(true);
@@ -626,7 +653,7 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
       {editingSection ? (
-        <BlockEditorPanel
+        <SectionContentCustomizer
           section={editingSection}
           onClose={() => {
             setEditingSection(null);
@@ -637,6 +664,7 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
             onSectionsChange(nextSections);
             setEditingSection(updatedSec);
           }}
+          onSave={onSave}
         />
       ) : (
         <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
@@ -698,6 +726,26 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
                         </p>
                       )}
                       <p className="text-muted" style={{ fontSize: 'clamp(10px, 1vw, 11px)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{section.description}</p>
+                      {getSectionSummary(section.key) && (
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.25rem',
+                          marginTop: '0.35rem',
+                          padding: '0.15rem 0.5rem',
+                          background: 'rgba(73, 75, 214, 0.05)',
+                          border: '1px solid rgba(73, 75, 214, 0.15)',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '11px',
+                          color: 'var(--primary)',
+                          fontWeight: 500,
+                        }}>
+                          <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>database</span>
+                          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '350px' }}>
+                            {getSectionSummary(section.key)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2202,6 +2250,1407 @@ function ContentPanel({ onSave }) {
                   </div>
                 ))
               )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SectionContentCustomizer({ section, onClose, onUpdateSection, onSave }) {
+  const { profile, projects, experiences, education, certifications, achievements, stats, skills } = usePortfolio();
+
+  if (section.key === 'hero') {
+    return <HeroManager section={section} onClose={onClose} onSave={onSave} profile={profile} />;
+  }
+  if (section.key === 'certifications') {
+    return <CertificationsManager section={section} onClose={onClose} onSave={onSave} list={certifications || []} />;
+  }
+  if (section.key === 'projects') {
+    return <ProjectsManager section={section} onClose={onClose} onSave={onSave} list={projects || []} />;
+  }
+  if (section.key === 'experience') {
+    return <ExperiencesManager section={section} onClose={onClose} onSave={onSave} list={experiences || []} />;
+  }
+  if (section.key === 'education') {
+    return <EducationManager section={section} onClose={onClose} onSave={onSave} list={education || []} />;
+  }
+  if (section.key === 'achievements') {
+    return <AchievementsManager section={section} onClose={onClose} onSave={onSave} list={achievements || []} />;
+  }
+  if (section.key === 'stats') {
+    return <StatsManager section={section} onClose={onClose} onSave={onSave} list={stats || []} />;
+  }
+  if (section.key === 'expertise') {
+    return <SkillsManager section={section} onClose={onClose} onSave={onSave} list={skills || []} />;
+  }
+
+  return (
+    <BlockEditorPanel
+      section={section}
+      onClose={onClose}
+      onUpdateSection={onUpdateSection}
+    />
+  );
+}
+
+function HeroManager({ section, onClose, onSave, profile }) {
+  const [formData, setFormData] = useState({ ...profile });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const objectUrl = URL.createObjectURL(file);
+      handleFieldChange('profile_picture', objectUrl);
+    }
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const uploadData = { ...formData };
+      if (selectedFile) {
+        uploadData.profile_picture = selectedFile;
+      } else if (typeof uploadData.profile_picture === 'string' && uploadData.profile_picture.startsWith('blob:')) {
+        delete uploadData.profile_picture;
+      }
+      await updateProfile(profile.id, uploadData);
+      alert('Hero profile details saved successfully!');
+      onSave();
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save profile details.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <form onSubmit={handleSave} className="glass-card-static" style={{ padding: '2rem', borderRadius: 'var(--radius-xl)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <ToggleRow
+            label="Show Profile Picture"
+            description="Display avatar monogram or professional photo in hero."
+            checked={formData.show_profile_picture}
+            onChange={() => handleFieldChange('show_profile_picture', !formData.show_profile_picture)}
+          />
+
+          {formData.show_profile_picture && (
+            <div style={{ padding: '1rem', background: 'var(--surface-container-low)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--outline-variant)' }}>
+              <p className="text-muted" style={{ fontSize: '13.5px', marginBottom: '0.5rem' }}>Select file to upload headshot:</p>
+              <input type="file" accept="image/*" onChange={handleFileChange} style={{ fontSize: '13px' }} />
+            </div>
+          )}
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Name</label>
+            <input
+              type="text"
+              className="input-field"
+              value={formData.name || ''}
+              onChange={e => handleFieldChange('name', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Title</label>
+            <input
+              type="text"
+              className="input-field"
+              value={formData.title || ''}
+              onChange={e => handleFieldChange('title', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Subtitle / Bio</label>
+            <textarea
+              className="input-field"
+              value={formData.subtitle || ''}
+              onChange={e => handleFieldChange('subtitle', e.target.value)}
+              style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+              required
+            />
+            <AIEnhanceButton value={formData.subtitle} onApply={(val) => handleFieldChange('subtitle', val)} />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Email</label>
+            <input
+              type="email"
+              className="input-field"
+              value={formData.email || ''}
+              onChange={e => handleFieldChange('email', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>Location</label>
+            <input
+              type="text"
+              className="input-field"
+              value={formData.location || ''}
+              onChange={e => handleFieldChange('location', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>GitHub URL</label>
+            <input
+              type="url"
+              className="input-field"
+              value={formData.github_url || ''}
+              onChange={e => handleFieldChange('github_url', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.25rem' }}>LinkedIn URL</label>
+            <input
+              type="url"
+              className="input-field"
+              value={formData.linkedin_url || ''}
+              onChange={e => handleFieldChange('linkedin_url', e.target.value)}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+          <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Profile Settings'}</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function AchievementsManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({ ...editingItem });
+    } else {
+      setFormData({ title: '', description: '', event: '', icon: 'emoji_events', order: 0 });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await updateAchievement(editingItem.id, formData);
+        alert('Achievement updated successfully!');
+      } else {
+        await createAchievement(formData);
+        alert('Achievement added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save achievement.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this achievement?')) return;
+    try {
+      await deleteAchievement(id);
+      alert('Achievement deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete achievement.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.title}` : 'Add New Achievement'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Achievement Title</label>
+              <input
+                type="text"
+                value={formData.title || ''}
+                onChange={e => handleFieldChange('title', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Event / Venue</label>
+              <input
+                type="text"
+                value={formData.event || ''}
+                onChange={e => handleFieldChange('event', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Description</label>
+              <textarea
+                value={formData.description || ''}
+                onChange={e => handleFieldChange('description', e.target.value)}
+                style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+              />
+              <AIEnhanceButton value={formData.description} onApply={(val) => handleFieldChange('description', val)} />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Icon (Material Icon name)</label>
+              <input
+                type="text"
+                value={formData.icon || 'emoji_events'}
+                onChange={e => handleFieldChange('icon', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Achievements: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Achievement
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((ach) => (
+                <div key={ach.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{ach.title}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      {ach.event} {ach.description && `• ${ach.description}`}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(ach)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(ach.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StatsManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({ ...editingItem });
+    } else {
+      setFormData({ label: '', value: '', icon: 'analytics', color: 'primary', order: 0 });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await updateStat(editingItem.id, formData);
+        alert('Stat updated successfully!');
+      } else {
+        await createStat(formData);
+        alert('Stat added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save stat.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this stat?')) return;
+    try {
+      await deleteStat(id);
+      alert('Stat deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete stat.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.label}` : 'Add New Stat'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Stat Label</label>
+              <input
+                type="text"
+                value={formData.label || ''}
+                onChange={e => handleFieldChange('label', e.target.value)}
+                placeholder="e.g. LeetCode Solved"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Stat Value</label>
+              <input
+                type="text"
+                value={formData.value || ''}
+                onChange={e => handleFieldChange('value', e.target.value)}
+                placeholder="e.g. 500+"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Icon (Material Icon name)</label>
+              <input
+                type="text"
+                value={formData.icon || 'analytics'}
+                onChange={e => handleFieldChange('icon', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Color Theme</label>
+              <select
+                value={formData.color || 'primary'}
+                onChange={e => handleFieldChange('color', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              >
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Stats: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Stat
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((st) => (
+                <div key={st.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{st.label}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      Value: {st.value} • Color: {st.color}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(st)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(st.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SkillsManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({ ...editingItem });
+    } else {
+      setFormData({ name: '', category: 'language', proficiency: 80, icon: '', order: 0 });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await updateSkill(editingItem.id, formData);
+        alert('Skill updated successfully!');
+      } else {
+        await createSkill(formData);
+        alert('Skill added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save skill.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this skill?')) return;
+    try {
+      await deleteSkill(id);
+      alert('Skill deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete skill.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.name}` : 'Add New Skill'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Skill Name</label>
+              <input
+                type="text"
+                value={formData.name || ''}
+                onChange={e => handleFieldChange('name', e.target.value)}
+                placeholder="e.g. Django or PostgreSQL"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Category</label>
+              <select
+                value={formData.category || 'language'}
+                onChange={e => handleFieldChange('category', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              >
+                <option value="language">Languages</option>
+                <option value="framework">Frameworks</option>
+                <option value="database">Databases</option>
+                <option value="tool">Tools</option>
+                <option value="concept">Concepts</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Proficiency (0-100)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={formData.proficiency || 80}
+                onChange={e => handleFieldChange('proficiency', parseInt(e.target.value) || 80)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Skills: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Skill
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((sk) => (
+                <div key={sk.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{sk.name}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      Category: {sk.category} • Proficiency: {sk.proficiency}%
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(sk)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(sk.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CertificationsManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({ ...editingItem });
+    } else {
+      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium' });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await updateCertification(editingItem.id, formData);
+        alert('Certification updated successfully!');
+      } else {
+        await createCertification(formData);
+        alert('Certification added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save certification.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this certification?')) return;
+    try {
+      await deleteCertification(id);
+      alert('Certification deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete certification.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.name}` : 'Add New Certification'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Certification Name</label>
+              <input
+                type="text"
+                value={formData.name || ''}
+                onChange={e => handleFieldChange('name', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Issuer</label>
+              <input
+                type="text"
+                value={formData.issuer || ''}
+                onChange={e => handleFieldChange('issuer', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Issued Date</label>
+              <input
+                type="text"
+                value={formData.issued_date || ''}
+                onChange={e => handleFieldChange('issued_date', e.target.value)}
+                placeholder="e.g. Oct 2024"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Credential Verification URL</label>
+              <input
+                type="url"
+                value={formData.credential_url || ''}
+                onChange={e => handleFieldChange('credential_url', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Certifications: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Certification
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((cert) => (
+                <div key={cert.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{cert.name}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      {cert.issuer} {cert.issued_date && `• Issued: ${cert.issued_date}`}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(cert)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(cert.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProjectsManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      const data = { ...editingItem };
+      if (Array.isArray(data.technologies)) data.technologies = data.technologies.join(', ');
+      setFormData(data);
+    } else {
+      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '' });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = { ...formData };
+      if (typeof payload.technologies === 'string') {
+        payload.technologies = payload.technologies.split(',').map(t => t.trim()).filter(Boolean);
+      }
+      if (editingItem) {
+        await updateProject(editingItem.id, payload);
+        alert('Project updated successfully!');
+      } else {
+        await createProject(payload);
+        alert('Project added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save project.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    try {
+      await deleteProject(id);
+      alert('Project deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete project.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.title}` : 'Add New Project'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Project Title</label>
+              <input
+                type="text"
+                value={formData.title || ''}
+                onChange={e => handleFieldChange('title', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Category</label>
+              <select
+                value={formData.category || 'fullstack'}
+                onChange={e => handleFieldChange('category', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              >
+                <option value="fullstack">Full Stack</option>
+                <option value="frontend">Frontend</option>
+                <option value="backend">Backend</option>
+                <option value="system_design">System Design</option>
+                <option value="ai_ml">AI/ML</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Description</label>
+              <textarea
+                value={formData.description || ''}
+                onChange={e => handleFieldChange('description', e.target.value)}
+                style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
+              <input
+                type="text"
+                value={formData.technologies || ''}
+                onChange={e => handleFieldChange('technologies', e.target.value)}
+                placeholder="e.g. Python, Django, PostgreSQL"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>GitHub URL</label>
+                <input
+                  type="url"
+                  value={formData.github_url || ''}
+                  onChange={e => handleFieldChange('github_url', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Live URL</label>
+                <input
+                  type="url"
+                  value={formData.live_url || ''}
+                  onChange={e => handleFieldChange('live_url', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Projects: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Project
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((proj) => (
+                <div key={proj.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{proj.title}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {proj.description}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(proj)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(proj.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExperiencesManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      const data = { ...editingItem };
+      if (Array.isArray(data.technologies)) data.technologies = data.technologies.join(', ');
+      if (Array.isArray(data.highlights)) data.highlights = data.highlights.join('\n');
+      setFormData(data);
+    } else {
+      setFormData({ company: '', role: '', department: '', start_date: '', end_date: 'Present', is_current: true, description: '', highlights: '', technologies: '' });
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = { ...formData };
+      if (typeof payload.technologies === 'string') {
+        payload.technologies = payload.technologies.split(',').map(t => t.trim()).filter(Boolean);
+      }
+      if (typeof payload.highlights === 'string') {
+        payload.highlights = payload.highlights.split('\n').map(h => h.trim()).filter(Boolean);
+      }
+      if (editingItem) {
+        await updateExperience(editingItem.id, payload);
+        alert('Experience updated successfully!');
+      } else {
+        await createExperience(payload);
+        alert('Experience added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save experience.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this experience?')) return;
+    try {
+      await deleteExperience(id);
+      alert('Experience deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete experience.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.role} at ${editingItem.company}` : 'Add New Work Experience'}
+            </h4>
+            
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Company</label>
+                <input
+                  type="text"
+                  value={formData.company || ''}
+                  onChange={e => handleFieldChange('company', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Role</label>
+                <input
+                  type="text"
+                  value={formData.role || ''}
+                  onChange={e => handleFieldChange('role', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Department</label>
+              <input
+                type="text"
+                value={formData.department || ''}
+                onChange={e => handleFieldChange('department', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Start Date</label>
+                <input
+                  type="text"
+                  value={formData.start_date || ''}
+                  onChange={e => handleFieldChange('start_date', e.target.value)}
+                  placeholder="e.g. Oct 2025"
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>End Date</label>
+                <input
+                  type="text"
+                  value={formData.end_date || ''}
+                  onChange={e => handleFieldChange('end_date', e.target.value)}
+                  placeholder="e.g. Present"
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Description</label>
+              <textarea
+                value={formData.description || ''}
+                onChange={e => handleFieldChange('description', e.target.value)}
+                style={{ width: '100%', minHeight: '60px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Highlights (one per line)</label>
+              <textarea
+                value={formData.highlights || ''}
+                onChange={e => handleFieldChange('highlights', e.target.value)}
+                placeholder="Enter each highlight bullet on a new line..."
+                style={{ width: '100%', minHeight: '100px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
+              <input
+                type="text"
+                value={formData.technologies || ''}
+                onChange={e => handleFieldChange('technologies', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Experiences: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Experience
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((exp) => (
+                <div key={exp.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{exp.role}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      {exp.company} • {exp.start_date} — {exp.end_date}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(exp)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(exp.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EducationManager({ section, onClose, onSave, list }) {
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) setFormData({ ...editingItem });
+    else setFormData({ institution: '', degree: '', field: '', start_year: '', end_year: '', grade: '', grade_type: 'CGPA' });
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editingItem) {
+        await updateEducation(editingItem.id, formData);
+        alert('Education entry updated successfully!');
+      } else {
+        await createEducation(formData);
+        alert('Education entry added successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save education.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this education entry?')) return;
+    try {
+      await deleteEducation(id);
+      alert('Education entry deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete education entry.');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <button type="button" className="btn btn-secondary" onClick={onClose} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.8rem', fontSize: '13px' }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
+          Back to Architect
+        </button>
+        <h3 className="text-headline-md" style={{ color: 'var(--primary)', margin: 0 }}>Customize {section.label}</h3>
+      </div>
+
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h4 className="text-headline-sm" style={{ color: 'var(--on-surface)', margin: 0 }}>
+              {editingItem ? `Edit: ${editingItem.degree} at ${editingItem.institution}` : 'Add New Education Entry'}
+            </h4>
+            
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Institution</label>
+              <input
+                type="text"
+                value={formData.institution || ''}
+                onChange={e => handleFieldChange('institution', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Degree</label>
+              <input
+                type="text"
+                value={formData.degree || ''}
+                onChange={e => handleFieldChange('degree', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                required
+              />
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Field of Study</label>
+              <input
+                type="text"
+                value={formData.field || ''}
+                onChange={e => handleFieldChange('field', e.target.value)}
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Start Year</label>
+                <input
+                  type="text"
+                  value={formData.start_year || ''}
+                  onChange={e => handleFieldChange('start_year', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>End Year</label>
+                <input
+                  type="text"
+                  value={formData.end_year || ''}
+                  onChange={e => handleFieldChange('end_year', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  required
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Grade</label>
+                <input
+                  type="text"
+                  value={formData.grade || ''}
+                  onChange={e => handleFieldChange('grade', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Grade Type</label>
+                <select
+                  value={formData.grade_type || 'CGPA'}
+                  onChange={e => handleFieldChange('grade_type', e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                >
+                  <option value="CGPA">CGPA</option>
+                  <option value="Percentage">Percentage</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <p style={{ fontWeight: 600, color: 'var(--on-surface-variant)', margin: 0, fontSize: '14px' }}>
+                Total Education entries: <strong style={{ color: 'var(--primary)' }}>{list.length}</strong>
+              </p>
+              <button type="button" className="btn btn-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Education
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {list.map((edu) => (
+                <div key={edu.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-lowest)' }}>
+                  <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                    <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: '0 0 2px 0' }}>{edu.degree} - {edu.institution}</p>
+                    <p className="text-muted" style={{ fontSize: '12px', margin: 0 }}>
+                      {edu.field} • {edu.start_year} — {edu.end_year} {edu.grade && `• Grade: ${edu.grade} (${edu.grade_type})`}
+                    </p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    <button type="button" className="btn-ghost" onClick={() => setEditingItem(edu)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+                    <button type="button" className="btn-ghost" onClick={() => handleDelete(edu.id)} style={{ padding: '4px' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -48,3 +48,16 @@ export const deleteEducation = (id) => client.delete(`/education/${id}/`);
 export const createCertification = (data) => client.post('/certifications/', data);
 export const updateCertification = (id, data) => client.patch(`/certifications/${id}/`, data);
 export const deleteCertification = (id) => client.delete(`/certifications/${id}/`);
+
+export const createSkill = (data) => client.post('/skills/', data);
+export const updateSkill = (id, data) => client.patch(`/skills/${id}/`, data);
+export const deleteSkill = (id) => client.delete(`/skills/${id}/`);
+
+export const createAchievement = (data) => client.post('/achievements/', data);
+export const updateAchievement = (id, data) => client.patch(`/achievements/${id}/`, data);
+export const deleteAchievement = (id) => client.delete(`/achievements/${id}/`);
+
+export const createStat = (data) => client.post('/stats/', data);
+export const updateStat = (id, data) => client.patch(`/stats/${id}/`, data);
+export const deleteStat = (id) => client.delete(`/stats/${id}/`);
+
