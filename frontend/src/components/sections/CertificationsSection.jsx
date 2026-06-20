@@ -34,7 +34,7 @@ export default function CertificationsSection({ sectionOverride }) {
         </div>
         <div className="grid grid-3">
           {certifications.map((cert, i) => {
-            const imgSrc = CERT_IMAGES[cert.name];
+            const imgSrc = cert.image || CERT_IMAGES[cert.name];
             return (
               <div key={cert.id || i} className="solid-card cert-card" style={{
                 padding: '16px',

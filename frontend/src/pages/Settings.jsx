@@ -1735,6 +1735,7 @@ function ContentPanel({ onSave }) {
   const [isAdding, setIsAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (editingItem) {
@@ -1742,7 +1743,8 @@ function ContentPanel({ onSave }) {
     } else {
       setFormData({});
     }
-  }, [editingItem]);
+    setSelectedFile(null);
+  }, [editingItem, isAdding, activeSubTab]);
 
   const handleFieldChange = (key, value) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -1761,19 +1763,21 @@ function ContentPanel({ onSave }) {
   const handleAddClick = () => {
     setEditingItem(null);
     setIsAdding(true);
+    setSelectedFile(null);
     if (activeSubTab === 'projects') {
-      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '' });
+      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '', image: null });
     } else if (activeSubTab === 'experiences') {
       setFormData({ company: '', role: '', department: '', start_date: '', end_date: 'Present', is_current: true, description: '', highlights: '', technologies: '' });
     } else if (activeSubTab === 'education') {
       setFormData({ institution: '', degree: '', field: '', start_year: '', end_year: '', grade: '', grade_type: 'CGPA' });
     } else if (activeSubTab === 'certifications') {
-      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium' });
+      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium', image: null });
     }
   };
 
   const handleEditClick = (item) => {
     setIsAdding(false);
+    setSelectedFile(null);
     const data = { ...item };
     if (data.technologies && Array.isArray(data.technologies)) {
       data.technologies = data.technologies.join(', ');
@@ -1814,6 +1818,9 @@ function ContentPanel({ onSave }) {
       }
       if (typeof payload.highlights === 'string') {
         payload.highlights = payload.highlights.split('\n').map(h => h.trim()).filter(Boolean);
+      }
+      if (selectedFile) {
+        payload.image = selectedFile;
       }
 
       if (editingItem) {
@@ -1950,6 +1957,25 @@ function ContentPanel({ onSave }) {
                     onChange={e => handleFieldChange('live_url', e.target.value)}
                     style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
                   />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Project Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setSelectedFile(file);
+                        const objectUrl = URL.createObjectURL(file);
+                        handleFieldChange('image', objectUrl);
+                      }
+                    }}
+                    style={{ fontSize: '13px' }}
+                  />
+                  {formData.image && (
+                    <img src={formData.image} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                  )}
                 </div>
               </>
             )}
@@ -2157,6 +2183,25 @@ function ContentPanel({ onSave }) {
                     onChange={e => handleFieldChange('credential_url', e.target.value)}
                     style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
                   />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Certificate Image Mockup</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setSelectedFile(file);
+                        const objectUrl = URL.createObjectURL(file);
+                        handleFieldChange('image', objectUrl);
+                      }
+                    }}
+                    style={{ fontSize: '13px' }}
+                  />
+                  {formData.image && (
+                    <img src={formData.image} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                  )}
                 </div>
               </>
             )}
@@ -2923,14 +2968,16 @@ function CertificationsManager({ section, onClose, onSave, list }) {
   const [isAdding, setIsAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (editingItem) {
       setFormData({ ...editingItem });
     } else {
-      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium' });
+      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium', image: null });
     }
-  }, [editingItem]);
+    setSelectedFile(null);
+  }, [editingItem, isAdding]);
 
   const handleFieldChange = (key, value) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -2940,15 +2987,20 @@ function CertificationsManager({ section, onClose, onSave, list }) {
     e.preventDefault();
     setSaving(true);
     try {
+      const payload = { ...formData };
+      if (selectedFile) {
+        payload.image = selectedFile;
+      }
       if (editingItem) {
-        await updateCertification(editingItem.id, formData);
+        await updateCertification(editingItem.id, payload);
         alert('Certification updated successfully!');
       } else {
-        await createCertification(formData);
+        await createCertification(payload);
         alert('Certification added successfully!');
       }
       setEditingItem(null);
       setIsAdding(false);
+      setSelectedFile(null);
       onSave();
     } catch (err) {
       console.error(err);
@@ -3030,6 +3082,26 @@ function CertificationsManager({ section, onClose, onSave, list }) {
               />
             </div>
 
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Certificate Image Mockup</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setSelectedFile(file);
+                    const objectUrl = URL.createObjectURL(file);
+                    handleFieldChange('image', objectUrl);
+                  }
+                }}
+                style={{ fontSize: '13px' }}
+              />
+              {formData.image && (
+                <img src={formData.image} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+              )}
+            </div>
+
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
               <button type="button" className="btn btn-secondary" onClick={() => { setEditingItem(null); setIsAdding(false); }}>Cancel</button>
               <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Save Entry'}</button>
@@ -3079,6 +3151,7 @@ function ProjectsManager({ section, onClose, onSave, list }) {
   const [isAdding, setIsAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     if (editingItem) {
@@ -3086,9 +3159,10 @@ function ProjectsManager({ section, onClose, onSave, list }) {
       if (Array.isArray(data.technologies)) data.technologies = data.technologies.join(', ');
       setFormData(data);
     } else {
-      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '' });
+      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '', image: null });
     }
-  }, [editingItem]);
+    setSelectedFile(null);
+  }, [editingItem, isAdding]);
 
   const handleFieldChange = (key, value) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -3102,6 +3176,9 @@ function ProjectsManager({ section, onClose, onSave, list }) {
       if (typeof payload.technologies === 'string') {
         payload.technologies = payload.technologies.split(',').map(t => t.trim()).filter(Boolean);
       }
+      if (selectedFile) {
+        payload.image = selectedFile;
+      }
       if (editingItem) {
         await updateProject(editingItem.id, payload);
         alert('Project updated successfully!');
@@ -3111,6 +3188,7 @@ function ProjectsManager({ section, onClose, onSave, list }) {
       }
       setEditingItem(null);
       setIsAdding(false);
+      setSelectedFile(null);
       onSave();
     } catch (err) {
       console.error(err);
@@ -3215,6 +3293,26 @@ function ProjectsManager({ section, onClose, onSave, list }) {
                   style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
                 />
               </div>
+            </div>
+
+            <div>
+              <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Project Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setSelectedFile(file);
+                    const objectUrl = URL.createObjectURL(file);
+                    handleFieldChange('image', objectUrl);
+                  }
+                }}
+                style={{ fontSize: '13px' }}
+              />
+              {formData.image && (
+                <img src={formData.image} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>

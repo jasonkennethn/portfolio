@@ -20,12 +20,21 @@ export default function ProjectCard({ project }) {
       >
         {/* Image placeholder with gradient — aspect ratio via padding */}
         <div className="project-card-image-wrapper" style={{ width: '100%', paddingTop: '50%', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, var(--surface-container) 0%, var(--surface-container-high) 100%)', transition: 'all var(--transition-apple)' }}>
-          <div style={{
-            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, rgba(73,75,214,0.05) 0%, rgba(0,109,75,0.05) 100%)',
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 'clamp(32px, 5vw, 48px)', color: 'var(--outline-variant)', opacity: 0.5 }}>code</span>
-          </div>
+          {project.image ? (
+            <img 
+              src={project.image} 
+              alt={project.title} 
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform var(--transition-apple)' }}
+              className="project-img"
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'linear-gradient(135deg, rgba(73,75,214,0.05) 0%, rgba(0,109,75,0.05) 100%)',
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 'clamp(32px, 5vw, 48px)', color: 'var(--outline-variant)', opacity: 0.5 }}>code</span>
+            </div>
+          )}
         </div>
       </a>
 

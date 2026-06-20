@@ -118,6 +118,7 @@ class Certification(models.Model):
     issued_date = models.CharField(max_length=100, blank=True)
     credential_url = models.URLField(blank=True)
     icon = models.CharField(max_length=50, default='verified')
+    image = models.ImageField(upload_to='certifications/', blank=True, null=True)
     order = models.IntegerField(default=0)
 
     class Meta:

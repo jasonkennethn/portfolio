@@ -49,6 +49,7 @@ class EducationViewSet(viewsets.ModelViewSet):
 class CertificationViewSet(viewsets.ModelViewSet):
     queryset = Certification.objects.all()
     serializer_class = CertificationSerializer
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
 
 class AchievementViewSet(viewsets.ModelViewSet):

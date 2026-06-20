@@ -33,8 +33,39 @@ export const uploadMediaFile = (file) => {
 export const createSection = (data) => client.post('/sections/', data);
 export const deleteSection = (id) => client.delete(`/sections/${id}/`);
 
-export const createProject = (data) => client.post('/projects/', data);
-export const updateProject = (id, data) => client.patch(`/projects/${id}/`, data);
+const toFormData = (data) => {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, val]) => {
+    if (val !== null && val !== undefined) {
+      if (key === 'image' && typeof val === 'string') {
+        return; // skip existing URL strings to let Django keep the current file
+      }
+      if (val instanceof File) {
+        formData.append(key, val);
+      } else if (Array.isArray(val)) {
+        formData.append(key, JSON.stringify(val));
+      } else {
+        formData.append(key, val);
+      }
+    }
+  });
+  return formData;
+};
+
+export const createProject = (data) => {
+  const formData = toFormData(data);
+  return client.post('/projects/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const updateProject = (id, data) => {
+  const formData = toFormData(data);
+  return client.patch(`/projects/${id}/`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
 export const deleteProject = (id) => client.delete(`/projects/${id}/`);
 
 export const createExperience = (data) => client.post('/experiences/', data);
@@ -45,8 +76,20 @@ export const createEducation = (data) => client.post('/education/', data);
 export const updateEducation = (id, data) => client.patch(`/education/${id}/`, data);
 export const deleteEducation = (id) => client.delete(`/education/${id}/`);
 
-export const createCertification = (data) => client.post('/certifications/', data);
-export const updateCertification = (id, data) => client.patch(`/certifications/${id}/`, data);
+export const createCertification = (data) => {
+  const formData = toFormData(data);
+  return client.post('/certifications/', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const updateCertification = (id, data) => {
+  const formData = toFormData(data);
+  return client.patch(`/certifications/${id}/`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
 export const deleteCertification = (id) => client.delete(`/certifications/${id}/`);
 
 export const createSkill = (data) => client.post('/skills/', data);
