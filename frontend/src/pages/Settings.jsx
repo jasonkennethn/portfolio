@@ -1952,6 +1952,7 @@ function ContentPanel({ onSave }) {
                     style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
                     required
                   />
+                  <AIEnhanceButton value={formData.description} onApply={(val) => handleFieldChange('description', val)} />
                 </div>
                 <div>
                   <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
@@ -3343,6 +3344,7 @@ function ProjectsManager({ section, onClose, onSave, list }) {
                 style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
                 required
               />
+              <AIEnhanceButton value={formData.description} onApply={(val) => handleFieldChange('description', val)} />
             </div>
 
             <div>
