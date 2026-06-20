@@ -18,10 +18,40 @@ from .serializers import (
 from .ai_service import AIService
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class CloudinaryCleanupMixin:
+    """Mixin to delete old Cloudinary files when images are replaced or instances deleted."""
+    # Subclasses should set this to the list of ImageField/FileField names on their model
+    file_fields = []
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        for field_name in self.file_fields:
+            old_file = getattr(instance, field_name, None)
+            new_file = self.request.FILES.get(field_name)
+            # Only delete old file if a NEW file is being uploaded to replace it
+            if new_file and old_file and hasattr(old_file, 'name') and old_file.name:
+                try:
+                    old_file.delete(save=False)
+                except Exception:
+                    pass  # Silently continue if deletion fails
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        for field_name in self.file_fields:
+            old_file = getattr(instance, field_name, None)
+            if old_file and hasattr(old_file, 'name') and old_file.name:
+                try:
+                    old_file.delete(save=False)
+                except Exception:
+                    pass
+        instance.delete()
+
+
+class ProfileViewSet(CloudinaryCleanupMixin, viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    file_fields = ['profile_picture', 'resume_file']
 
 
 class SkillViewSet(viewsets.ModelViewSet):
@@ -29,16 +59,18 @@ class SkillViewSet(viewsets.ModelViewSet):
     serializer_class = SkillSerializer
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(CloudinaryCleanupMixin, viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    file_fields = ['image']
 
 
-class ExperienceViewSet(viewsets.ModelViewSet):
+class ExperienceViewSet(CloudinaryCleanupMixin, viewsets.ModelViewSet):
     queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    file_fields = ['company_logo']
 
 
 class EducationViewSet(viewsets.ModelViewSet):
@@ -46,10 +78,11 @@ class EducationViewSet(viewsets.ModelViewSet):
     serializer_class = EducationSerializer
 
 
-class CertificationViewSet(viewsets.ModelViewSet):
+class CertificationViewSet(CloudinaryCleanupMixin, viewsets.ModelViewSet):
     queryset = Certification.objects.all()
     serializer_class = CertificationSerializer
     parser_classes = [MultiPartParser, FormParser, JSONParser]
+    file_fields = ['image']
 
 
 class AchievementViewSet(viewsets.ModelViewSet):
