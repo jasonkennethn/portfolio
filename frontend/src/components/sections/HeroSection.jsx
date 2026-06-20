@@ -22,7 +22,7 @@ export default function HeroSection({ profileOverride }) {
           <div className="hero-text-container" style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '3%',
+            gap: 'clamp(1.5rem, 3.5vh, 2.2rem)',
             alignItems: hasPic ? 'flex-start' : 'center',
             textAlign: hasPic ? 'left' : 'center',
             maxWidth: '90%',
@@ -35,12 +35,12 @@ export default function HeroSection({ profileOverride }) {
             </h1>
 
             {/* Technical Sub-headline */}
-            <h3 className="text-headline-md hero-subtitle" style={{ color: 'var(--primary)', marginTop: '-0.5%', fontWeight: 600 }}>
+            <h3 className="text-headline-md hero-subtitle" style={{ color: 'var(--primary)', marginTop: '0.25rem', marginBottom: '0.25rem', fontWeight: 600 }}>
               {profile.title || 'Your Title'}
             </h3>
 
             {/* Subtitle */}
-            <p className="text-body-lg text-muted hero-desc" style={{ maxWidth: '90%', margin: hasPic ? '0' : '0 auto' }}>
+            <p className="text-body-lg text-muted hero-desc" style={{ maxWidth: '90%', margin: hasPic ? '0' : '0 auto', marginBottom: '0.5rem', lineHeight: 1.6 }}>
               {profile.subtitle || 'Your professional bio goes here.'}
             </p>
 
@@ -48,8 +48,8 @@ export default function HeroSection({ profileOverride }) {
             <div className="hero-btn-container" style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '2%',
-              paddingTop: '2%',
+              gap: '16px',
+              paddingTop: '8px',
               justifyContent: hasPic ? 'flex-start' : 'center',
               width: '100%',
             }}>

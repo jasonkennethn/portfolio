@@ -404,14 +404,22 @@ img {
 .tech-chip-outline {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.75rem;
-  background: var(--surface-container);
-  color: var(--on-surface-variant);
+  padding: 0.35rem 0.8rem;
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  color: var(--primary);
   font-family: var(--font-code);
-  font-size: clamp(10px, 1vw, 12px);
-  font-weight: 500;
+  font-size: clamp(10.5px, 1.1vw, 12.5px);
+  font-weight: 600;
   border-radius: var(--radius-md);
-  border: 1px solid var(--outline-variant);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  transition: all var(--transition-fast);
+}
+
+.tech-chip-outline:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(73, 75, 214, 0.12);
 }
 
 /* ── Toggle Switch ── */
@@ -1280,3 +1288,84 @@ img {
     padding: 3% !important;
   }
 }
+
+/* ── Certification Card Hover Effects ── */
+.cert-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
+}
+
+.cert-image-link {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-apple), box-shadow var(--transition-apple);
+}
+
+.cert-image-link:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+
+.cert-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-apple);
+}
+
+.cert-image-link:hover .cert-img {
+  transform: scale(1.06);
+}
+
+/* ── Hamburger & Close Button Styles ── */
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-surface);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.hamburger-btn:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
+  color: var(--primary) !important;
+}
+
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+.drawer-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  color: var(--on-surface);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.drawer-close-btn:hover {
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
+  color: var(--primary) !important;
+}
+
+.drawer-close-btn:active {
+  transform: scale(0.95);
+}
+

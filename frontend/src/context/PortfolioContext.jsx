@@ -44,18 +44,21 @@ const DEFAULT_DATA = {
       description: 'Developed a real-time railway operations and analytics platform with automated tracking and data-driven monitoring, while troubleshooting complex system bottlenecks to improve operational efficiency.',
       technologies: ['Python', 'Django', 'SQL', 'REST API', 'Analytics'],
       github_url: 'https://github.com/jasonkennethn/RailTrace',
+      live_url: 'https://railtrace.vercel.app',
     },
     {
       id: 2, title: 'MedFlare', category: 'fullstack', featured: true,
       description: 'Built an AI-powered healthcare management platform with intelligent workflow automation, patient record management, and clinical productivity features for doctors and hospitals.',
       technologies: ['Python', 'Django', 'AI/ML', 'REST API', 'PostgreSQL'],
       github_url: 'https://github.com/jasonkennethn/MediChain',
+      live_url: 'https://medflare.vercel.app',
     },
     {
       id: 3, title: 'CSFlow', category: 'fullstack', featured: true,
       description: 'Developed a corporate governance and compliance management platform for company secretarial operations, statutory filings, board management, compliance tracking, document management, and AI-assisted workflow automation.',
       technologies: ['Python', 'Django', 'AI', 'PostgreSQL', 'REST API'],
       github_url: 'https://github.com/jasonkennethn/CSFlow',
+      live_url: 'https://csflow.vercel.app',
     },
   ],
   experiences: [
@@ -88,9 +91,9 @@ const DEFAULT_DATA = {
     { id: 2, institution: 'Nandi PU College', degree: 'Pre-University Course', field: 'Science', start_year: '2021', end_year: '2023', grade: '73.8%', grade_type: 'Percentage' },
   ],
   certifications: [
-    { id: 1, name: 'Certified System Administrator (CSA)', issuer: 'ServiceNow', icon: 'verified' },
-    { id: 2, name: 'Certified Application Developer (CAD)', issuer: 'ServiceNow', icon: 'code' },
-    { id: 3, name: 'IBM Data Engineering Professional Certificate', issuer: 'IBM, Coursera', icon: 'school' },
+    { id: 1, name: 'Certified System Administrator (CSA)', issuer: 'ServiceNow', credential_url: 'https://nowlearning.servicenow.com/', icon: 'verified' },
+    { id: 2, name: 'Certified Application Developer (CAD)', issuer: 'ServiceNow', credential_url: 'https://nowlearning.servicenow.com/', icon: 'code' },
+    { id: 3, name: 'IBM Data Engineering Professional Certificate', issuer: 'IBM, Coursera', credential_url: 'https://www.coursera.org/professional-certificates/ibm-data-engineering', icon: 'school' },
   ],
   achievements: [
     { id: 1, title: 'SIH Internal Hackathon Winner', description: 'Developed RailTrace — Railway Track Management System', event: 'BITM, Ballari', icon: 'emoji_events' },
@@ -180,9 +183,9 @@ export function PortfolioProvider({ children }) {
       console.warn('Using fallback data:', err.message);
       setData(DEFAULT_DATA);
     } finally {
-      // Enforce showing the skeleton loading for at least 100ms (0.1 seconds)
+      // Enforce showing the skeleton loading for at least 20ms (0.02 seconds)
       const elapsedTime = Date.now() - startTime;
-      const minDuration = 100;
+      const minDuration = 20;
       const remainingTime = Math.max(0, minDuration - elapsedTime);
       setTimeout(() => {
         setLoading(false);

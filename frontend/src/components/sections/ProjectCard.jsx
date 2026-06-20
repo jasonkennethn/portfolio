@@ -11,19 +11,27 @@ export default function ProjectCard({ project }) {
 
   return (
     <div className="project-card" id={`project-${project.id}`}>
-      {/* Image placeholder with gradient — aspect ratio via padding */}
-      <div style={{ width: '100%', paddingTop: '50%', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, var(--surface-container) 0%, var(--surface-container-high) 100%)' }}>
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'linear-gradient(135deg, rgba(73,75,214,0.05) 0%, rgba(0,109,75,0.05) 100%)',
-        }}>
-          <span className="material-symbols-outlined" style={{ fontSize: 'clamp(32px, 5vw, 48px)', color: 'var(--outline-variant)', opacity: 0.5 }}>code</span>
+      {/* Clickable Image wrapper */}
+      <a 
+        href={project.live_url || '#'} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        style={{ display: 'block', width: '100%', cursor: 'pointer', overflow: 'hidden' }}
+      >
+        {/* Image placeholder with gradient — aspect ratio via padding */}
+        <div className="project-card-image-wrapper" style={{ width: '100%', paddingTop: '50%', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, var(--surface-container) 0%, var(--surface-container-high) 100%)', transition: 'all var(--transition-apple)' }}>
+          <div style={{
+            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg, rgba(73,75,214,0.05) 0%, rgba(0,109,75,0.05) 100%)',
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 'clamp(32px, 5vw, 48px)', color: 'var(--outline-variant)', opacity: 0.5 }}>code</span>
+          </div>
         </div>
-      </div>
+      </a>
 
       <div className="project-card-body">
         {/* Category */}
-        <div style={{ marginBottom: '3%' }}>
+        <div style={{ marginBottom: '12px' }}>
           <span className="text-code" style={{
             padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)',
             background: cat.bg, color: cat.text, fontSize: 'clamp(10px, 1vw, 11px)',
@@ -33,18 +41,18 @@ export default function ProjectCard({ project }) {
           </span>
         </div>
 
-        <h3 className="text-headline-md" style={{ color: 'var(--on-surface)', marginBottom: '2%' }}>{project.title}</h3>
-        <p className="text-body-sm text-muted" style={{ marginBottom: '4%', flex: 1 }}>{project.description}</p>
+        <h3 className="text-headline-md" style={{ color: 'var(--on-surface)', marginBottom: '8px' }}>{project.title}</h3>
+        <p className="text-body-sm text-muted" style={{ marginBottom: '16px', flex: 1 }}>{project.description}</p>
 
         {/* Technologies */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2%', marginBottom: '4%' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
           {(project.technologies || []).map(t => (
             <span key={t} className="tech-chip-outline">{t}</span>
           ))}
         </div>
 
         {/* Links */}
-        <div style={{ display: 'flex', gap: '3%', marginTop: 'auto' }}>
+        <div style={{ display: 'flex', gap: '16px', marginTop: 'auto' }}>
           {project.github_url && (
             <a href={project.github_url} target="_blank" rel="noopener noreferrer"
               style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: 'clamp(12px, 1.2vw, 14px)' }}>

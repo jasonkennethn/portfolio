@@ -174,21 +174,20 @@ export default function Navbar() {
             <div className="mobile-hamburger">
               <button 
                 onClick={() => setDrawerOpen(true)} 
+                className="hamburger-btn"
                 style={{
-                  background: 'var(--surface-container-low)',
-                  border: '1px solid var(--outline-variant)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '0.6rem',
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '8px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--on-surface)',
-                  boxShadow: 'var(--shadow-sm)',
-                  transition: 'all var(--transition-apple)',
+                  transition: 'all var(--transition-fast)',
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 'clamp(22px, 4vw, 28px)' }}>menu</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>menu</span>
               </button>
             </div>
           )}
@@ -200,8 +199,18 @@ export default function Navbar() {
         className={`mobile-nav-overlay ${drawerOpen ? 'open' : ''}`} 
         onClick={() => setDrawerOpen(false)} 
         style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          zIndex: 199,
           pointerEvents: drawerOpen ? 'all' : 'none',
           opacity: drawerOpen ? 1 : 0,
+          transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       />
 
@@ -209,9 +218,14 @@ export default function Navbar() {
       <div 
         className={`mobile-nav ${drawerOpen ? 'open' : ''}`}
         style={{
-          right: drawerOpen ? '0' : '-100%',
+          position: 'fixed',
+          top: 0,
+          right: 0,
           width: '75%',
           maxWidth: '320px',
+          height: '100vh',
+          height: '100dvh',
+          zIndex: 200,
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
@@ -219,32 +233,39 @@ export default function Navbar() {
           display: 'flex',
           flexDirection: 'column',
           boxShadow: 'var(--shadow-lg)',
-          padding: '5%',
+          padding: '24px',
           overflowY: 'auto',
+          transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '5%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--glass-border)' }}>
+          <span className="nav-brand" style={{ color: 'var(--on-surface)', fontWeight: 700, fontSize: '18px' }}>
+            Jason Kenneth N
+          </span>
           <button 
-            className="btn-ghost" 
+            className="drawer-close-btn" 
             onClick={() => setDrawerOpen(false)}
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               borderRadius: '50%',
-              background: 'var(--surface-container-low)',
-              border: '1px solid var(--outline-variant)',
+              background: 'transparent',
+              border: 'none',
               color: 'var(--on-surface)',
+              cursor: 'pointer',
+              transition: 'all var(--transition-fast)',
             }}
           >
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>close</span>
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2%', flex: 1 }}>
-          <p className="text-label-caps text-muted" style={{ marginBottom: '3%', letterSpacing: '0.1em' }}>Navigation</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+          <p className="text-label-caps text-muted" style={{ marginBottom: '8px', letterSpacing: '0.1em' }}>Navigation</p>
           {navItems.map(sec => {
             const targetId = `${sec.key}-section`;
             const isActive = location.pathname === '/' && activeSection === targetId;
@@ -257,8 +278,8 @@ export default function Navbar() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '3%',
-                  padding: '3% 4%',
+                  gap: '12px',
+                  padding: '10px 16px',
                   borderRadius: 'var(--radius-lg)',
                   fontSize: 'clamp(13px, 1.5vw, 15px)',
                   fontWeight: isActive ? 600 : 500,
