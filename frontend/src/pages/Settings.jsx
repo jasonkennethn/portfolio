@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { usePortfolio } from '../context/PortfolioContext';
-import { updateConfig, updateSectionOrder, updateProfile, updateSectionConfig, uploadMediaFile, createSection, deleteSection } from '../api/portfolio';
+import { 
+  updateConfig, updateSectionOrder, updateProfile, updateSectionConfig, uploadMediaFile, createSection, deleteSection,
+  createProject, updateProject, deleteProject,
+  createExperience, updateExperience, deleteExperience,
+  createEducation, updateEducation, deleteEducation,
+  createCertification, updateCertification, deleteCertification
+} from '../api/portfolio';
 import { useCallback } from 'react';
 import { enhanceText } from '../api/ai';
 import Home from './Home';
@@ -10,6 +16,7 @@ const TABS = [
   { key: 'theme', label: 'Theme Settings', icon: 'palette' },
   { key: 'profile', label: 'Profile Details', icon: 'person' },
   { key: 'sections', label: 'Section Architect', icon: 'layers' },
+  { key: 'content', label: 'Manage Content', icon: 'edit_note' },
 ];
 
 export default function Settings() {
@@ -90,6 +97,9 @@ export default function Settings() {
                 onSectionsChange={handleSectionsChange}
                 onSave={refreshData}
               />
+            )}
+            {activeTab === 'content' && (
+              <ContentPanel onSave={refreshData} />
             )}
           </div>
         )}
@@ -1664,6 +1674,537 @@ function ToggleRow({ label, description, checked, onChange }) {
       </div>
       <div className={`toggle-track ${checked ? 'active' : ''}`} onClick={onChange}>
         <div className="toggle-thumb"></div>
+      </div>
+    </div>
+  );
+}
+
+function ContentPanel({ onSave }) {
+  const { projects, experiences, education, certifications } = usePortfolio();
+  const [activeSubTab, setActiveSubTab] = useState('projects');
+  
+  const [editingItem, setEditingItem] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (editingItem) {
+      setFormData({ ...editingItem });
+    } else {
+      setFormData({});
+    }
+  }, [editingItem]);
+
+  const handleFieldChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const getSubTabList = () => {
+    switch (activeSubTab) {
+      case 'projects': return projects || [];
+      case 'experiences': return experiences || [];
+      case 'education': return education || [];
+      case 'certifications': return certifications || [];
+      default: return [];
+    }
+  };
+
+  const handleAddClick = () => {
+    setEditingItem(null);
+    setIsAdding(true);
+    if (activeSubTab === 'projects') {
+      setFormData({ title: '', description: '', category: 'fullstack', technologies: '', github_url: '', live_url: '' });
+    } else if (activeSubTab === 'experiences') {
+      setFormData({ company: '', role: '', department: '', start_date: '', end_date: 'Present', is_current: true, description: '', highlights: '', technologies: '' });
+    } else if (activeSubTab === 'education') {
+      setFormData({ institution: '', degree: '', field: '', start_year: '', end_year: '', grade: '', grade_type: 'CGPA' });
+    } else if (activeSubTab === 'certifications') {
+      setFormData({ name: '', issuer: '', issued_date: '', credential_url: '', icon: 'workspace_premium' });
+    }
+  };
+
+  const handleEditClick = (item) => {
+    setIsAdding(false);
+    const data = { ...item };
+    if (data.technologies && Array.isArray(data.technologies)) {
+      data.technologies = data.technologies.join(', ');
+    }
+    if (data.highlights && Array.isArray(data.highlights)) {
+      data.highlights = data.highlights.join('\n');
+    }
+    setEditingItem(data);
+  };
+
+  const handleDelete = async (itemId) => {
+    if (!confirm('Are you sure you want to delete this item?')) return;
+    try {
+      if (activeSubTab === 'projects') {
+        await deleteProject(itemId);
+      } else if (activeSubTab === 'experiences') {
+        await deleteExperience(itemId);
+      } else if (activeSubTab === 'education') {
+        await deleteEducation(itemId);
+      } else if (activeSubTab === 'certifications') {
+        await deleteCertification(itemId);
+      }
+      alert('Deleted successfully!');
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete item.');
+    }
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const payload = { ...formData };
+      if (typeof payload.technologies === 'string') {
+        payload.technologies = payload.technologies.split(',').map(t => t.trim()).filter(Boolean);
+      }
+      if (typeof payload.highlights === 'string') {
+        payload.highlights = payload.highlights.split('\n').map(h => h.trim()).filter(Boolean);
+      }
+
+      if (editingItem) {
+        if (activeSubTab === 'projects') {
+          await updateProject(editingItem.id, payload);
+        } else if (activeSubTab === 'experiences') {
+          await updateExperience(editingItem.id, payload);
+        } else if (activeSubTab === 'education') {
+          await updateEducation(editingItem.id, payload);
+        } else if (activeSubTab === 'certifications') {
+          await updateCertification(editingItem.id, payload);
+        }
+        alert('Updated successfully!');
+      } else {
+        if (activeSubTab === 'projects') {
+          await createProject(payload);
+        } else if (activeSubTab === 'experiences') {
+          await createExperience(payload);
+        } else if (activeSubTab === 'education') {
+          await createEducation(payload);
+        } else if (activeSubTab === 'certifications') {
+          await createCertification(payload);
+        }
+        alert('Created successfully!');
+      }
+      setEditingItem(null);
+      setIsAdding(false);
+      onSave();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save item.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const list = getSubTabList();
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
+      <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
+        
+        {/* Sub Navigation */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--outline-variant)', paddingBottom: '0.75rem', overflowX: 'auto' }}>
+          {[
+            { key: 'projects', label: 'Projects', icon: 'folder' },
+            { key: 'experiences', label: 'Work Experience', icon: 'work' },
+            { key: 'education', label: 'Education', icon: 'school' },
+            { key: 'certifications', label: 'Certifications', icon: 'verified' },
+          ].map(st => (
+            <button
+              key={st.key}
+              type="button"
+              className={`filter-btn ${activeSubTab === st.key ? 'active' : ''}`}
+              onClick={() => {
+                setActiveSubTab(st.key);
+                setEditingItem(null);
+                setIsAdding(false);
+              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', border: 'none', background: 'none', cursor: 'pointer', padding: '0.4rem 0.8rem', fontSize: '13px' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{st.icon}</span>
+              {st.label}
+            </button>
+          ))}
+        </div>
+
+        {/* View list or Form */}
+        {editingItem || isAdding ? (
+          <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <h3 className="text-headline-md" style={{ color: 'var(--on-surface)', marginBottom: '0.5rem' }}>
+              {editingItem ? 'Edit Entry' : 'Add New Entry'}
+            </h3>
+
+            {activeSubTab === 'projects' && (
+              <>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Title</label>
+                  <input
+                    type="text"
+                    value={formData.title || ''}
+                    onChange={e => handleFieldChange('title', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Category</label>
+                  <select
+                    value={formData.category || 'fullstack'}
+                    onChange={e => handleFieldChange('category', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  >
+                    <option value="fullstack">Full Stack</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="backend">Backend</option>
+                    <option value="system_design">System Design</option>
+                    <option value="ai_ml">AI/ML</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Description</label>
+                  <textarea
+                    value={formData.description || ''}
+                    onChange={e => handleFieldChange('description', e.target.value)}
+                    style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={formData.technologies || ''}
+                    onChange={e => handleFieldChange('technologies', e.target.value)}
+                    placeholder="e.g. Python, Django, SQL"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>GitHub URL</label>
+                  <input
+                    type="url"
+                    value={formData.github_url || ''}
+                    onChange={e => handleFieldChange('github_url', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Live URL</label>
+                  <input
+                    type="url"
+                    value={formData.live_url || ''}
+                    onChange={e => handleFieldChange('live_url', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+              </>
+            )}
+
+            {activeSubTab === 'experiences' && (
+              <>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Company</label>
+                  <input
+                    type="text"
+                    value={formData.company || ''}
+                    onChange={e => handleFieldChange('company', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Role</label>
+                  <input
+                    type="text"
+                    value={formData.role || ''}
+                    onChange={e => handleFieldChange('role', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Department</label>
+                  <input
+                    type="text"
+                    value={formData.department || ''}
+                    onChange={e => handleFieldChange('department', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Start Date</label>
+                    <input
+                      type="text"
+                      value={formData.start_date || ''}
+                      onChange={e => handleFieldChange('start_date', e.target.value)}
+                      placeholder="e.g. Oct 2025"
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>End Date</label>
+                    <input
+                      type="text"
+                      value={formData.end_date || ''}
+                      onChange={e => handleFieldChange('end_date', e.target.value)}
+                      placeholder="e.g. Present or Dec 2025"
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Description</label>
+                  <textarea
+                    value={formData.description || ''}
+                    onChange={e => handleFieldChange('description', e.target.value)}
+                    style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Highlights / Bullets (one per line)</label>
+                  <textarea
+                    value={formData.highlights || ''}
+                    onChange={e => handleFieldChange('highlights', e.target.value)}
+                    placeholder="Enter each highlight bullet on a new line..."
+                    style={{ width: '100%', minHeight: '100px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={formData.technologies || ''}
+                    onChange={e => handleFieldChange('technologies', e.target.value)}
+                    placeholder="e.g. Python, Django, SQL"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+              </>
+            )}
+
+            {activeSubTab === 'education' && (
+              <>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Institution</label>
+                  <input
+                    type="text"
+                    value={formData.institution || ''}
+                    onChange={e => handleFieldChange('institution', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Degree</label>
+                  <input
+                    type="text"
+                    value={formData.degree || ''}
+                    onChange={e => handleFieldChange('degree', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Field of Study</label>
+                  <input
+                    type="text"
+                    value={formData.field || ''}
+                    onChange={e => handleFieldChange('field', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Start Year</label>
+                    <input
+                      type="text"
+                      value={formData.start_year || ''}
+                      onChange={e => handleFieldChange('start_year', e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>End Year</label>
+                    <input
+                      type="text"
+                      value={formData.end_year || ''}
+                      onChange={e => handleFieldChange('end_year', e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Grade</label>
+                    <input
+                      type="text"
+                      value={formData.grade || ''}
+                      onChange={e => handleFieldChange('grade', e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Grade Type</label>
+                    <select
+                      value={formData.grade_type || 'CGPA'}
+                      onChange={e => handleFieldChange('grade_type', e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    >
+                      <option value="CGPA">CGPA</option>
+                      <option value="Percentage">Percentage</option>
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeSubTab === 'certifications' && (
+              <>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Name</label>
+                  <input
+                    type="text"
+                    value={formData.name || ''}
+                    onChange={e => handleFieldChange('name', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Issuer</label>
+                  <input
+                    type="text"
+                    value={formData.issuer || ''}
+                    onChange={e => handleFieldChange('issuer', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Issued Date</label>
+                  <input
+                    type="text"
+                    value={formData.issued_date || ''}
+                    onChange={e => handleFieldChange('issued_date', e.target.value)}
+                    placeholder="e.g. Oct 2024 or Dec 2025"
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Credential URL</label>
+                  <input
+                    type="url"
+                    value={formData.credential_url || ''}
+                    onChange={e => handleFieldChange('credential_url', e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)' }}
+                  />
+                </div>
+              </>
+            )}
+
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setEditingItem(null);
+                  setIsAdding(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={saving}
+              >
+                {saving ? 'Saving...' : 'Save Entry'}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 className="text-headline-md" style={{ color: 'var(--on-surface)', margin: 0 }}>
+                Manage {activeSubTab.charAt(0).toUpperCase() + activeSubTab.slice(1)}
+              </h3>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleAddClick}
+                style={{ padding: '0.35rem 0.75rem', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                Add Item
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {list.length === 0 ? (
+                <p className="text-muted" style={{ textAlign: 'center', padding: '1.5rem 0', fontSize: '13.5px' }}>
+                  No items found. Click "Add Item" to create one!
+                </p>
+              ) : (
+                list.map((item, idx) => (
+                  <div
+                    key={item.id || idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.75rem 1rem',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--outline-variant)',
+                      background: 'var(--surface-container-lowest)',
+                    }}
+                  >
+                    <div style={{ minWidth: 0, flex: 1, paddingRight: '1rem' }}>
+                      <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14px', margin: '0 0 2px 0' }}>
+                        {item.title || item.company || item.institution || item.name}
+                      </p>
+                      <p className="text-muted" style={{ fontSize: '12px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.description || item.role || item.degree || item.issuer}
+                        {item.issued_date && ` • Issued: ${item.issued_date}`}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.25rem', flexShrink: 0 }}>
+                      <button
+                        type="button"
+                        className="btn-ghost"
+                        onClick={() => handleEditClick(item)}
+                        style={{ padding: '4px' }}
+                        title="Edit entry"
+                      >
+                        <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-ghost"
+                        onClick={() => handleDelete(item.id)}
+                        style={{ padding: '4px' }}
+                        title="Delete entry"
+                      >
+                        <span className="material-symbols-outlined" style={{ color: 'var(--error)', fontSize: '18px' }}>delete_outline</span>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

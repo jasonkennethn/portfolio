@@ -158,6 +158,7 @@ class Command(BaseCommand):
         Certification.objects.create(
             name='Certified System Administrator (CSA)',
             issuer='ServiceNow',
+            issued_date='Oct 2024',
             credential_url='https://nowlearning.servicenow.com/',
             icon='workspace_premium',
             order=0,
@@ -165,6 +166,7 @@ class Command(BaseCommand):
         Certification.objects.create(
             name='Certified Application Developer (CAD)',
             issuer='ServiceNow',
+            issued_date='Oct 2023',
             credential_url='https://nowlearning.servicenow.com/',
             icon='workspace_premium',
             order=1,
@@ -172,6 +174,7 @@ class Command(BaseCommand):
         Certification.objects.create(
             name='IBM Data Engineering Professional Certificate',
             issuer='IBM, Coursera',
+            issued_date='Oct 2023',
             credential_url='https://www.coursera.org/professional-certificates/ibm-data-engineering',
             icon='workspace_premium',
             order=2,

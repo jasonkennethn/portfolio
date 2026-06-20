@@ -115,6 +115,7 @@ class Certification(models.Model):
     """Professional certifications."""
     name = models.CharField(max_length=200)
     issuer = models.CharField(max_length=200)
+    issued_date = models.CharField(max_length=100, blank=True)
     credential_url = models.URLField(blank=True)
     icon = models.CharField(max_length=50, default='verified')
     order = models.IntegerField(default=0)

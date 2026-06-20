@@ -91,9 +91,9 @@ const DEFAULT_DATA = {
     { id: 2, institution: 'Nandi PU College', degree: 'Pre-University Course', field: 'Science', start_year: '2021', end_year: '2023', grade: '73.8%', grade_type: 'Percentage' },
   ],
   certifications: [
-    { id: 1, name: 'Certified System Administrator (CSA)', issuer: 'ServiceNow', credential_url: 'https://nowlearning.servicenow.com/', icon: 'verified' },
-    { id: 2, name: 'Certified Application Developer (CAD)', issuer: 'ServiceNow', credential_url: 'https://nowlearning.servicenow.com/', icon: 'code' },
-    { id: 3, name: 'IBM Data Engineering Professional Certificate', issuer: 'IBM, Coursera', credential_url: 'https://www.coursera.org/professional-certificates/ibm-data-engineering', icon: 'school' },
+    { id: 1, name: 'Certified System Administrator (CSA)', issuer: 'ServiceNow', issued_date: 'Oct 2024', credential_url: 'https://nowlearning.servicenow.com/', icon: 'verified' },
+    { id: 2, name: 'Certified Application Developer (CAD)', issuer: 'ServiceNow', issued_date: 'Oct 2023', credential_url: 'https://nowlearning.servicenow.com/', icon: 'code' },
+    { id: 3, name: 'IBM Data Engineering Professional Certificate', issuer: 'IBM, Coursera', issued_date: 'Oct 2023', credential_url: 'https://www.coursera.org/professional-certificates/ibm-data-engineering', icon: 'school' },
   ],
   achievements: [
     { id: 1, title: 'SIH Internal Hackathon Winner', description: 'Developed RailTrace — Railway Track Management System', event: 'BITM, Ballari', icon: 'emoji_events' },

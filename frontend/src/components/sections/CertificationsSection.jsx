@@ -80,10 +80,15 @@ export default function CertificationsSection({ sectionOverride }) {
                     <FallbackCertificateSvg />
                   )}
                 </a>
-                <h4 className="text-headline-md" style={{ fontSize: 'clamp(14px, 1.4vw, 17px)', color: 'var(--on-surface)', marginBottom: '8px', fontWeight: 700 }}>
+                <h4 className="text-headline-md" style={{ fontSize: 'clamp(14px, 1.4vw, 17px)', color: 'var(--on-surface)', marginBottom: '6px', fontWeight: 700 }}>
                   {cert.name}
                 </h4>
-                <p className="text-muted" style={{ fontSize: 'clamp(12px, 1.1vw, 14px)', marginTop: 'auto' }}>{cert.issuer}</p>
+                <p className="text-muted" style={{ fontSize: 'clamp(12.5px, 1.1vw, 14px)', marginBottom: '4px' }}>{cert.issuer}</p>
+                {cert.issued_date && (
+                  <p style={{ fontSize: 'clamp(11px, 1vw, 12px)', color: 'var(--primary)', fontWeight: 600, fontFamily: 'var(--font-code)', marginTop: 'auto' }}>
+                    Issued: {cert.issued_date}
+                  </p>
+                )}
               </div>
             );
           })}
