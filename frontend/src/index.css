@@ -18,6 +18,9 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* ── Design Tokens ── */
@@ -65,14 +68,14 @@ html {
   --font-body: 'Inter', sans-serif;
   --font-code: 'JetBrains Mono', monospace;
 
-  /* ─── Spacing (%-based for dynamic sizing) ─── */
-  --container-max: min(90%, 1280px);
-  --gutter: 4%;
-  --section-gap: 5%;
-  --stack-sm: 0.5rem;
-  --stack-md: 1rem;
-  --stack-lg: 2rem;
-  --stack-xl: 3rem;
+  /* ─── Spacing (Dynamic & Fluid sizing) ─── */
+  --container-max: clamp(290px, 94vw, 1280px);
+  --gutter: clamp(12px, 3.5vw, 32px);
+  --section-gap: clamp(3.5rem, 8vw, 8rem);
+  --stack-sm: clamp(0.25rem, 1vw, 0.5rem);
+  --stack-md: clamp(0.5rem, 2vw, 1rem);
+  --stack-lg: clamp(1rem, 4vw, 2rem);
+  --stack-xl: clamp(1.5rem, 6vw, 3rem);
 
   /* ─── Elevation ─── */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
@@ -559,12 +562,12 @@ img {
 /* ── Grid ── */
 .grid {
   display: grid;
-  gap: var(--stack-lg);
+  gap: clamp(1rem, 2.5vw, 2rem);
 }
 
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
 
 /* ── Responsive grids for key SDE Portfolio components ── */
 .hero-grid {
@@ -626,23 +629,11 @@ img {
 
 /* ── Tablet Breakpoint ── */
 @media (max-width: 1024px) {
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  /* Dynamic auto-fit grids handle columns naturally */
 }
 
 @media (max-width: 768px) {
-  :root {
-    --gutter: 3%;
-    --container-max: 94%;
-    --section-gap: 12%;
-  }
-
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .nav-links { display: none; }
-
-  .section {
-    padding: 12% 0;
-  }
 
   .section-header {
     margin-bottom: 5%;
@@ -664,9 +655,7 @@ img {
 
 /* ── Small Mobile Breakpoint ── */
 @media (max-width: 480px) {
-  :root {
-    --gutter: 5%;
-  }
+  /* Dynamic gutters handled by clamp() automatically */
 
   .stats-grid {
     grid-template-columns: 1fr;
