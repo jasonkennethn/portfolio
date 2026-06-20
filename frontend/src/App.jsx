@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
-import { PortfolioProvider } from './context/PortfolioContext';
+import { PortfolioProvider, usePortfolio } from './context/PortfolioContext';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Settings from './pages/Settings';
@@ -9,7 +9,8 @@ import AnimatedBackground from './components/ui/AnimatedBackground';
 
 function AppContent() {
   const location = useLocation();
-  const showNavbar = location.pathname === '/';
+  const { loading } = usePortfolio();
+  const showNavbar = location.pathname === '/' && !loading;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>

@@ -125,7 +125,6 @@ export function PortfolioProvider({ children }) {
 
   const loadData = useCallback(async () => {
     try {
-      setLoading(true);
       const res = await fetchPortfolioData();
       const d = res.data;
       setData({
@@ -144,11 +143,21 @@ export function PortfolioProvider({ children }) {
       console.warn('Using fallback data:', err.message);
       setData(DEFAULT_DATA);
     } finally {
-      setLoading(false);
+      // Background fetch completes
     }
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    // Start background data load
+    loadData();
+
+    // Limit visible skeleton loading to exactly 0.02 seconds (20ms)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 20);
+
+    return () => clearTimeout(timer);
+  }, [loadData]);
 
   const updateSections = (newSections) => {
     setData(prev => ({ ...prev, sections: newSections }));
