@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { usePortfolio } from '../context/PortfolioContext';
 import { updateConfig, updateSectionOrder, updateProfile, updateSectionConfig, uploadMediaFile, createSection, deleteSection } from '../api/portfolio';
+import { useCallback } from 'react';
 import { enhanceText } from '../api/ai';
 import Home from './Home';
 
@@ -46,8 +47,8 @@ export default function Settings() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', padding: '2rem 1rem var(--section-gap) 1rem' }}>
-      <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+    <main style={{ minHeight: '100vh', padding: '3% 2% 5% 2%', width: '100%' }}>
+      <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '3%' }}>
         
         {/* Top Section - Header & Tabs */}
         <div>
@@ -97,12 +98,12 @@ export default function Settings() {
         <div style={{
           width: '100%',
           background: 'var(--surface-container-low)',
-          padding: '1.5rem',
+          padding: '3%',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--outline-variant)',
           display: 'flex',
           flexDirection: 'column',
-          marginTop: '1rem',
+          marginTop: '2%',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -121,7 +122,7 @@ export default function Settings() {
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            height: '420px', // Smaller box below editor controls
+            height: 'clamp(280px, 40vw, 420px)',
           }}>
             {/* Browser Header Bar */}
             <div style={{
@@ -460,6 +461,8 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
   const [editingSection, setEditingSection] = useState(null);
   const [draggingKey, setDraggingKey] = useState(null);
   const [dragOverKey, setDragOverKey] = useState(null);
+  const [renamingKey, setRenamingKey] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
   const [applying, setApplying] = useState(false);
 
   const handleApply = async () => {
@@ -519,6 +522,41 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
       s.key === key && !s.is_mandatory ? { ...s, is_visible: !s.is_visible } : s
     );
     onSectionsChange(updated);
+  };
+
+  const startRename = (section) => {
+    setRenamingKey(section.key);
+    setRenameValue(section.label);
+  };
+
+  const confirmRename = async (section) => {
+    const trimmed = renameValue.trim();
+    if (!trimmed || trimmed === section.label) {
+      setRenamingKey(null);
+      return;
+    }
+    const updated = draftSections.map(s =>
+      s.key === section.key ? { ...s, label: trimmed } : s
+    );
+    onSectionsChange(updated);
+    setRenamingKey(null);
+    // Persist to backend
+    try {
+      if (section.id) {
+        await updateSectionConfig(section.id, { label: trimmed });
+      }
+    } catch (err) {
+      console.warn('Rename persisted locally only:', err.message);
+    }
+  };
+
+  const handleRenameKeyDown = (e, section) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      confirmRename(section);
+    } else if (e.key === 'Escape') {
+      setRenamingKey(null);
+    }
   };
 
   // Add new custom section
@@ -591,7 +629,7 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
           }}
         />
       ) : (
-        <div className="glass-card-static" style={{ padding: '2rem', borderRadius: 'var(--radius-xl)' }}>
+        <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <span className="material-symbols-outlined" style={{ color: 'var(--outline)' }}>drag_indicator</span>
@@ -626,20 +664,50 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '3%', minWidth: 0, flex: 1 }}>
                     <span className="material-symbols-outlined" style={{ color: 'var(--outline)', userSelect: 'none', flexShrink: 0 }}>drag_handle</span>
-                    <div style={{ minWidth: 0 }}>
-                      <p style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: '14.5px', margin: 0 }}>{section.label}</p>
-                      <p className="text-muted" style={{ fontSize: '11px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{section.description}</p>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      {renamingKey === section.key ? (
+                        <input
+                          className="section-rename-input"
+                          type="text"
+                          value={renameValue}
+                          onChange={e => setRenameValue(e.target.value)}
+                          onBlur={() => confirmRename(section)}
+                          onKeyDown={e => handleRenameKeyDown(e, section)}
+                          autoFocus
+                          onClick={e => e.stopPropagation()}
+                        />
+                      ) : (
+                        <p
+                          style={{ fontWeight: 600, color: 'var(--on-surface)', fontSize: 'clamp(13px, 1.3vw, 14.5px)', margin: 0, cursor: 'pointer' }}
+                          onDoubleClick={() => startRename(section)}
+                          title="Double-click to rename"
+                        >
+                          {section.label}
+                        </p>
+                      )}
+                      <p className="text-muted" style={{ fontSize: 'clamp(10px, 1vw, 11px)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{section.description}</p>
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+                    {/* Rename button */}
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={(e) => { e.stopPropagation(); startRename(section); }}
+                      title="Rename section"
+                      style={{ padding: '4px' }}
+                    >
+                      <span className="material-symbols-outlined" style={{ color: 'var(--outline)', fontSize: '18px' }}>edit</span>
+                    </button>
+
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={() => setEditingSection(section)}
-                      style={{ padding: '0.35rem 0.75rem', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                      style={{ padding: '0.35rem 0.75rem', fontSize: 'clamp(11px, 1.1vw, 12.5px)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit_document</span>
                       <span className="section-btn-label">Customize</span>
@@ -886,7 +954,7 @@ function BlockEditorPanel({ section, onClose, onUpdateSection }) {
   };
 
   return (
-    <div className="glass-card-static" style={{ padding: '2rem', borderRadius: 'var(--radius-xl)' }}>
+    <div className="glass-card-static" style={{ padding: '4%', borderRadius: 'var(--radius-xl)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button type="button" className="btn-ghost" onClick={onClose} style={{ padding: '4px' }}>

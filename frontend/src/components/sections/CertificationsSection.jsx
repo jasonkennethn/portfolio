@@ -3,6 +3,8 @@ import { usePortfolio } from '../../context/PortfolioContext';
 export default function CertificationsSection() {
   const { certifications } = usePortfolio();
 
+  if (!certifications || certifications.length === 0) return null;
+
   return (
     <section className="section" id="certifications-section" style={{ background: 'var(--surface-container-low)' }}>
       <div className="container">
@@ -14,23 +16,23 @@ export default function CertificationsSection() {
         <div className="grid grid-3">
           {certifications.map((cert, i) => (
             <div key={cert.id || i} className="solid-card" style={{
-              padding: 'var(--stack-lg)', textAlign: 'center',
+              padding: '5%', textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center',
             }}>
               <div style={{
-                width: '64px', height: '64px', borderRadius: 'var(--radius-full)',
+                width: 'clamp(48px, 6vw, 64px)', height: 'clamp(48px, 6vw, 64px)', borderRadius: 'var(--radius-full)',
                 background: 'rgba(73, 75, 214, 0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                marginBottom: '1.25rem',
+                marginBottom: '4%',
               }}>
-                <span className="material-symbols-outlined filled" style={{ fontSize: '32px', color: 'var(--primary)' }}>
+                <span className="material-symbols-outlined filled" style={{ fontSize: 'clamp(24px, 3vw, 32px)', color: 'var(--primary)' }}>
                   workspace_premium
                 </span>
               </div>
-              <h4 className="text-headline-md" style={{ fontSize: '17px', color: 'var(--on-surface)', marginBottom: '0.5rem' }}>
+              <h4 className="text-headline-md" style={{ fontSize: 'clamp(14px, 1.4vw, 17px)', color: 'var(--on-surface)', marginBottom: '2%' }}>
                 {cert.name}
               </h4>
-              <p className="text-muted" style={{ fontSize: '14px' }}>{cert.issuer}</p>
+              <p className="text-muted" style={{ fontSize: 'clamp(12px, 1.1vw, 14px)' }}>{cert.issuer}</p>
             </div>
           ))}
         </div>

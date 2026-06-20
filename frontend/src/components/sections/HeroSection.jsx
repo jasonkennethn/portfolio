@@ -9,7 +9,7 @@ export default function HeroSection({ profileOverride }) {
   const hasPic = !!(profile.show_profile_picture && profile.profile_picture && (typeof profile.profile_picture !== 'string' || profile.profile_picture.trim() !== ''));
 
   return (
-    <section className="section" style={{ paddingTop: '6rem', paddingBottom: '4rem' }} id="hero-section">
+    <section className="section" style={{ paddingTop: '6%', paddingBottom: '4%' }} id="hero-section">
       <div className="container">
         <div className={`hero-grid ${hasPic ? 'with-pic' : 'no-pic'}`} style={{
           display: hasPic ? 'grid' : 'flex',
@@ -17,38 +17,39 @@ export default function HeroSection({ profileOverride }) {
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: hasPic ? 'left' : 'center',
-          gap: hasPic ? '1.5rem' : '2rem',
+          gap: hasPic ? '3%' : '3%',
         }}>
           <div className="hero-text-container" style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '1.5rem',
+            gap: '3%',
             alignItems: hasPic ? 'flex-start' : 'center',
             textAlign: hasPic ? 'left' : 'center',
-            maxWidth: '800px',
+            maxWidth: '90%',
             margin: '0 auto',
+            width: '100%',
           }}>
             {/* Headline */}
             <h1 className="text-display hero-title" style={{ color: 'var(--on-surface)', fontWeight: 800 }}>
-              {profile.name || 'Jason Kenneth N'}
+              {profile.name || 'Your Name'}
             </h1>
 
             {/* Technical Sub-headline */}
-            <h3 className="text-headline-md hero-subtitle" style={{ color: 'var(--primary)', marginTop: '-0.5rem', fontWeight: 600 }}>
-              {profile.title || 'Software Development Engineer'}
+            <h3 className="text-headline-md hero-subtitle" style={{ color: 'var(--primary)', marginTop: '-0.5%', fontWeight: 600 }}>
+              {profile.title || 'Your Title'}
             </h3>
 
             {/* Subtitle */}
-            <p className="text-body-lg text-muted hero-desc" style={{ maxWidth: '640px', margin: hasPic ? '0' : '0 auto' }}>
-              {profile.subtitle || 'Software Development Engineer specialized in clean, scalable backend architectures and API-driven systems.'}
+            <p className="text-body-lg text-muted hero-desc" style={{ maxWidth: '90%', margin: hasPic ? '0' : '0 auto' }}>
+              {profile.subtitle || 'Your professional bio goes here.'}
             </p>
 
             {/* CTA Buttons */}
             <div className="hero-btn-container" style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '1rem',
-              paddingTop: '1rem',
+              gap: '2%',
+              paddingTop: '2%',
               justifyContent: hasPic ? 'flex-start' : 'center',
               width: '100%',
             }}>
@@ -64,8 +65,8 @@ export default function HeroSection({ profileOverride }) {
             {/* Social Links - Improved Glass Circular Buttons */}
             <div style={{
               display: 'flex',
-              gap: '1.25rem',
-              paddingTop: '0.75rem',
+              gap: '3%',
+              paddingTop: '2%',
               justifyContent: hasPic ? 'flex-start' : 'center',
               width: '100%',
             }}>
@@ -89,7 +90,7 @@ export default function HeroSection({ profileOverride }) {
 
           {/* Profile Picture */}
           {hasPic && (
-            <div className="glass-card hero-pic-container" style={{ padding: '0.5rem', borderRadius: 'var(--radius-3xl)', width: '100%', maxWidth: '350px', height: '350px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+            <div className="glass-card hero-pic-container" style={{ padding: '2%', borderRadius: 'var(--radius-3xl)', width: '100%', maxWidth: '40%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
               <img
                 src={profile.profile_picture}
                 alt={profile.name}
@@ -105,12 +106,12 @@ export default function HeroSection({ profileOverride }) {
         .hero-grid.with-pic {
           display: grid;
           grid-template-columns: 1.2fr 0.8fr !important;
-          gap: 1.5rem !important;
+          gap: 3% !important;
           align-items: center;
         }
         .hero-social-btn {
-          width: 48px;
-          height: 48px;
+          width: clamp(36px, 5vw, 48px);
+          height: clamp(36px, 5vw, 48px);
           border-radius: 50%;
           background: var(--glass-bg);
           border: 1px solid var(--outline-variant);
@@ -143,51 +144,61 @@ export default function HeroSection({ profileOverride }) {
           box-shadow: 0 0 15px rgba(234, 67, 53, 0.25) !important;
           transform: translateY(-4px) scale(1.1) !important;
         }
+        .hero-social-btn svg {
+          width: clamp(16px, 2vw, 20px);
+          height: clamp(16px, 2vw, 20px);
+        }
         @media (max-width: 768px) {
           .hero-grid.with-pic {
             grid-template-columns: 1.25fr 0.75fr !important;
-            gap: 0.75rem !important;
+            gap: 3% !important;
           }
           .hero-title {
-            font-size: 22px !important;
+            font-size: clamp(20px, 6vw, 28px) !important;
           }
           .hero-subtitle {
-            font-size: 14px !important;
+            font-size: clamp(13px, 3.5vw, 16px) !important;
           }
           .hero-desc {
-            font-size: 12.5px !important;
+            font-size: clamp(12px, 3vw, 14px) !important;
             line-height: 1.4 !important;
           }
           .hero-pic-container {
-            max-width: 130px !important;
-            height: 130px !important;
+            max-width: 60% !important;
             border-radius: var(--radius-2xl) !important;
           }
           .hero-pic-container img {
             border-radius: var(--radius-xl) !important;
           }
           .hero-text-container {
-            gap: 0.75rem !important;
+            gap: 2% !important;
           }
           .hero-btn-container {
-            gap: 0.5rem !important;
-            padding-top: 0.5rem !important;
+            gap: 2% !important;
+            padding-top: 2% !important;
           }
           .hero-btn-container .btn {
             padding: 0.4rem 0.8rem !important;
-            font-size: 11px !important;
+            font-size: clamp(11px, 2.8vw, 13px) !important;
             border-radius: var(--radius-md) !important;
           }
-          .hero-social-btn {
-            width: 40px;
-            height: 40px;
+        }
+        @media (max-width: 480px) {
+          .hero-grid.with-pic {
+            grid-template-columns: 1fr !important;
+            text-align: center !important;
           }
-          .hero-social-btn svg {
-            width: 18px;
-            height: 18px;
+          .hero-text-container {
+            align-items: center !important;
+            text-align: center !important;
           }
-          .hero-social-btn .material-symbols-outlined {
-            font-size: 18px !important;
+          .hero-btn-container {
+            justify-content: center !important;
+          }
+          .hero-pic-container {
+            max-width: 50% !important;
+            margin: 0 auto !important;
+            order: -1;
           }
         }
       `}</style>

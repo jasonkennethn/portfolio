@@ -133,12 +133,12 @@ export default function Navbar() {
             }}
           >
             {navItems.map(sec => (
-              <span key={sec.key} style={{ fontSize: '14.5px' }}>{sec.label}</span>
+              <span key={sec.key} style={{ fontSize: 'clamp(12px, 1.2vw, 14.5px)' }}>{sec.label}</span>
             ))}
           </div>
 
           {/* Desktop inline links - Centered, hidden on mobile/tablet or when overflowing */}
-          <div className="desktop-links" style={{ display: useHamburger ? 'none' : 'flex', alignItems: 'center', gap: '1.5rem', margin: '0 auto' }}>
+          <div className="desktop-links" style={{ display: useHamburger ? 'none' : 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)', margin: '0 auto' }}>
             {navItems.map(sec => {
               const targetId = `${sec.key}-section`;
               const isActive = location.pathname === '/' && activeSection === targetId;
@@ -149,7 +149,7 @@ export default function Navbar() {
                   onClick={(e) => handleNavClick(e, targetId)}
                   className={`nav-link ${isActive ? 'active' : ''}`}
                   style={{
-                    fontSize: '14.5px',
+                    fontSize: 'clamp(12px, 1.2vw, 14.5px)',
                     fontWeight: isActive ? 600 : 500,
                     color: isActive ? 'var(--primary)' : 'var(--on-surface-variant)',
                     borderBottom: isActive ? '2px solid var(--primary)' : '2px solid transparent',
@@ -181,7 +181,7 @@ export default function Navbar() {
                 transition: 'all var(--transition-apple)',
               }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>menu</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 'clamp(22px, 4vw, 28px)' }}>menu</span>
             </button>
           </div>
         </div>
@@ -201,8 +201,9 @@ export default function Navbar() {
       <div 
         className={`mobile-nav ${drawerOpen ? 'open' : ''}`}
         style={{
-          right: drawerOpen ? '0' : '-320px',
-          width: '300px',
+          right: drawerOpen ? '0' : '-100%',
+          width: '75%',
+          maxWidth: '320px',
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
@@ -210,10 +211,10 @@ export default function Navbar() {
           display: 'flex',
           flexDirection: 'column',
           boxShadow: 'var(--shadow-lg)',
-          padding: '2.5rem 2rem',
+          padding: '5%',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '5%' }}>
           <button 
             className="btn-ghost" 
             onClick={() => setDrawerOpen(false)}
@@ -233,8 +234,8 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
-          <p className="text-label-caps text-muted" style={{ marginBottom: '1rem', letterSpacing: '0.1em' }}>Navigation</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2%', flex: 1 }}>
+          <p className="text-label-caps text-muted" style={{ marginBottom: '3%', letterSpacing: '0.1em' }}>Navigation</p>
           {navItems.map(sec => {
             const targetId = `${sec.key}-section`;
             const isActive = location.pathname === '/' && activeSection === targetId;
@@ -247,10 +248,10 @@ export default function Navbar() {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.75rem',
-                  padding: '0.85rem 1.25rem',
+                  gap: '3%',
+                  padding: '3% 4%',
                   borderRadius: 'var(--radius-lg)',
-                  fontSize: '15px',
+                  fontSize: 'clamp(13px, 1.5vw, 15px)',
                   fontWeight: isActive ? 600 : 500,
                   color: isActive ? 'var(--primary)' : 'var(--on-surface-variant)',
                   background: isActive ? 'var(--primary-container)' : 'transparent',

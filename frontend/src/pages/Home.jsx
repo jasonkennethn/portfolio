@@ -19,7 +19,7 @@ const SECTION_MAP = {
 };
 
 export default function Home({ isPreview = false, profileOverride = null, sectionsOverride = null }) {
-  const { sections, loading } = usePortfolio();
+  const { sections } = usePortfolio();
   const location = useLocation();
 
   useEffect(() => {
@@ -37,17 +37,6 @@ export default function Home({ isPreview = false, profileOverride = null, sectio
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [location, isPreview]);
-
-  if (loading && !isPreview) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <span className="material-symbols-outlined animate-pulse" style={{ fontSize: '48px', color: 'var(--primary)' }}>code</span>
-          <p className="text-muted" style={{ marginTop: '1rem' }}>Loading portfolio...</p>
-        </div>
-      </div>
-    );
-  }
 
   // Render all active, visible sections ordered by order preference
   const targetSections = isPreview && sectionsOverride ? sectionsOverride : sections;
@@ -68,7 +57,7 @@ export default function Home({ isPreview = false, profileOverride = null, sectio
             />
             {/* If section has dynamic content blocks in a standard section, render them below the default content */}
             {SECTION_MAP[section.key] && section.content && section.content.length > 0 && (
-              <div style={{ marginTop: '-4rem', paddingBottom: '4rem' }}>
+              <div style={{ marginTop: '-4%', paddingBottom: '4%' }}>
                 <CustomSection sectionOverride={section} />
               </div>
             )}
