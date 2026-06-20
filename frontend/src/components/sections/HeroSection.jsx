@@ -1,4 +1,5 @@
 import { usePortfolio } from '../../context/PortfolioContext';
+import { getMediaUrl } from '../../api/client';
 
 export default function HeroSection({ profileOverride }) {
   const { profile: contextProfile } = usePortfolio();
@@ -92,7 +93,7 @@ export default function HeroSection({ profileOverride }) {
           {hasPic && (
             <div className="glass-card hero-pic-container" style={{ padding: '2%', borderRadius: 'var(--radius-3xl)', width: '100%', maxWidth: '40%', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
               <img
-                src={profile.profile_picture}
+                src={getMediaUrl(profile.profile_picture)}
                 alt={profile.name}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'var(--radius-2xl)' }}
               />

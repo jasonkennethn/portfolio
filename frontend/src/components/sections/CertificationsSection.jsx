@@ -1,4 +1,5 @@
 import { usePortfolio } from '../../context/PortfolioContext';
+import { getMediaUrl } from '../../api/client';
 import servicenowCsa from '../../assets/servicenow_csa.png';
 import servicenowCad from '../../assets/servicenow_cad.png';
 import ibmDataEngineering from '../../assets/ibm_data_engineering.png';
@@ -34,7 +35,7 @@ export default function CertificationsSection({ sectionOverride }) {
         </div>
         <div className="grid grid-3">
           {certifications.map((cert, i) => {
-            const imgSrc = cert.image || CERT_IMAGES[cert.name];
+            const imgSrc = cert.image ? getMediaUrl(cert.image) : CERT_IMAGES[cert.name];
             return (
               <div key={cert.id || i} className="solid-card cert-card" style={{
                 padding: '16px',

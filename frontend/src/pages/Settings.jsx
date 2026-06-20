@@ -13,6 +13,7 @@ import {
 } from '../api/portfolio';
 import { useCallback } from 'react';
 import { enhanceText } from '../api/ai';
+import { getMediaUrl } from '../api/client';
 import Home from './Home';
 
 const TABS = [
@@ -1180,7 +1181,7 @@ function BlockEditorPanel({ section, onClose, onUpdateSection }) {
                       style={{ fontSize: '12px' }}
                     />
                     {block.imageUrl && (
-                      <img src={block.imageUrl} alt="Card preview" style={{ width: '80px', height: '50px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                      <img src={getMediaUrl(block.imageUrl)} alt="Card preview" style={{ width: '80px', height: '50px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
                     )}
                   </div>
                 )}
@@ -1207,7 +1208,7 @@ function BlockEditorPanel({ section, onClose, onUpdateSection }) {
                   style={{ fontSize: '12px' }}
                 />
                 {block.imageUrl && (
-                  <img src={block.imageUrl} alt="Media preview" style={{ width: '100px', height: '80px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                  <img src={getMediaUrl(block.imageUrl)} alt="Media preview" style={{ width: '100px', height: '80px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
                 )}
               </div>
             )}
@@ -1974,7 +1975,7 @@ function ContentPanel({ onSave }) {
                     style={{ fontSize: '13px' }}
                   />
                   {formData.image && (
-                    <img src={formData.image} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                    <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
                   )}
                 </div>
               </>
@@ -2200,7 +2201,7 @@ function ContentPanel({ onSave }) {
                     style={{ fontSize: '13px' }}
                   />
                   {formData.image && (
-                    <img src={formData.image} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                    <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
                   )}
                 </div>
               </>
@@ -3098,7 +3099,7 @@ function CertificationsManager({ section, onClose, onSave, list }) {
                 style={{ fontSize: '13px' }}
               />
               {formData.image && (
-                <img src={formData.image} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
               )}
             </div>
 
@@ -3311,7 +3312,7 @@ function ProjectsManager({ section, onClose, onSave, list }) {
                 style={{ fontSize: '13px' }}
               />
               {formData.image && (
-                <img src={formData.image} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
               )}
             </div>
 

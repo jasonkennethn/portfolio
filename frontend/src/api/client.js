@@ -11,4 +11,15 @@ const client = axios.create({
   },
 });
 
+export const getMediaUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) {
+    return url;
+  }
+  const base = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8000'
+    : 'https://jasonkennethn.pythonanywhere.com';
+  return `${base}${url}`;
+};
+
 export default client;

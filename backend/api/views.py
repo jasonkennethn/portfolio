@@ -82,18 +82,19 @@ def portfolio_data(request):
     """Get all portfolio data in a single request for the frontend."""
     profile = Profile.objects.first()
     config, _ = SiteConfig.objects.get_or_create(pk=1)
+    context = {'request': request}
 
     data = {
-        'profile': ProfileSerializer(profile).data if profile else {},
-        'skills': SkillSerializer(Skill.objects.all(), many=True).data,
-        'projects': ProjectSerializer(Project.objects.all(), many=True).data,
-        'experiences': ExperienceSerializer(Experience.objects.all(), many=True).data,
-        'education': EducationSerializer(Education.objects.all(), many=True).data,
-        'certifications': CertificationSerializer(Certification.objects.all(), many=True).data,
-        'achievements': AchievementSerializer(Achievement.objects.all(), many=True).data,
-        'config': SiteConfigSerializer(config).data,
-        'sections': SectionConfigSerializer(SectionConfig.objects.all(), many=True).data,
-        'stats': QuickStatSerializer(QuickStat.objects.all(), many=True).data,
+        'profile': ProfileSerializer(profile, context=context).data if profile else {},
+        'skills': SkillSerializer(Skill.objects.all(), many=True, context=context).data,
+        'projects': ProjectSerializer(Project.objects.all(), many=True, context=context).data,
+        'experiences': ExperienceSerializer(Experience.objects.all(), many=True, context=context).data,
+        'education': EducationSerializer(Education.objects.all(), many=True, context=context).data,
+        'certifications': CertificationSerializer(Certification.objects.all(), many=True, context=context).data,
+        'achievements': AchievementSerializer(Achievement.objects.all(), many=True, context=context).data,
+        'config': SiteConfigSerializer(config, context=context).data,
+        'sections': SectionConfigSerializer(SectionConfig.objects.all(), many=True, context=context).data,
+        'stats': QuickStatSerializer(QuickStat.objects.all(), many=True, context=context).data,
     }
     return Response(data)
 
@@ -104,12 +105,13 @@ def ai_recommendations(request):
     try:
         ai = AIService()
         profile = Profile.objects.first()
+        context = {'request': request}
         profile_data = {
-            'profile': ProfileSerializer(profile).data if profile else {},
-            'skills': SkillSerializer(Skill.objects.all(), many=True).data,
-            'projects': ProjectSerializer(Project.objects.all(), many=True).data,
-            'experiences': ExperienceSerializer(Experience.objects.all(), many=True).data,
-            'certifications': CertificationSerializer(Certification.objects.all(), many=True).data,
+            'profile': ProfileSerializer(profile, context=context).data if profile else {},
+            'skills': SkillSerializer(Skill.objects.all(), many=True, context=context).data,
+            'projects': ProjectSerializer(Project.objects.all(), many=True, context=context).data,
+            'experiences': ExperienceSerializer(Experience.objects.all(), many=True, context=context).data,
+            'certifications': CertificationSerializer(Certification.objects.all(), many=True, context=context).data,
         }
         result = ai.get_portfolio_recommendations(profile_data)
         return Response(result)

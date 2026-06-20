@@ -1,3 +1,5 @@
+import { getMediaUrl } from '../../api/client';
+
 const CATEGORY_COLORS = {
   fullstack: { bg: 'rgba(73, 75, 214, 0.1)', text: 'var(--primary)', label: 'Full Stack' },
   frontend: { bg: 'rgba(0, 109, 75, 0.1)', text: 'var(--secondary)', label: 'Frontend' },
@@ -22,7 +24,7 @@ export default function ProjectCard({ project }) {
         <div className="project-card-image-wrapper" style={{ width: '100%', paddingTop: '50%', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, var(--surface-container) 0%, var(--surface-container-high) 100%)', transition: 'all var(--transition-apple)' }}>
           {project.image ? (
             <img 
-              src={project.image} 
+              src={getMediaUrl(project.image)} 
               alt={project.title} 
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform var(--transition-apple)' }}
               className="project-img"
