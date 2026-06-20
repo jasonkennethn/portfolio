@@ -13,7 +13,7 @@ function AppContent() {
   const showNavbar = location.pathname === '/' && !loading;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', paddingTop: showNavbar ? 'clamp(56px, 6vh, 72px)' : '0' }}>
       <AnimatedBackground />
       {showNavbar && <Navbar />}
       <div style={{ flex: 1, position: 'relative', zIndex: 1 }}>

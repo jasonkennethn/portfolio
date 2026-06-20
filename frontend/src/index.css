@@ -482,8 +482,10 @@ img {
 
 /* ── Navbar ── */
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   z-index: 100;
   background: rgba(249, 249, 255, 0.8);
@@ -1251,5 +1253,30 @@ img {
 @keyframes shimmer-skeleton {
   100% {
     transform: translateX(100%);
+  }
+}
+
+/* ── Orientation Adjustments for Small Height Viewports (e.g. mobile landscape) ── */
+@media (max-height: 520px) and (orientation: landscape) {
+  .section {
+    padding: clamp(1.5rem, 4vh, 3rem) 0 !important;
+  }
+  
+  .section-header {
+    margin-bottom: 2% !important;
+  }
+
+  #hero-section {
+    padding-top: clamp(2rem, 5vh, 4rem) !important;
+    padding-bottom: clamp(1.5rem, 4vh, 3rem) !important;
+  }
+
+  .hero-grid {
+    gap: 12px !important;
+  }
+
+  /* Compact spacing for cards on landscape mobile */
+  .glass-card, .solid-card {
+    padding: 3% !important;
   }
 }

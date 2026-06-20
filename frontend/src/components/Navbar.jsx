@@ -118,8 +118,14 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar" id="main-navbar">
-        <div ref={containerRef} className="navbar-inner" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', position: 'relative' }}>
+        <div ref={containerRef} className="navbar-inner" style={{ display: 'flex', justifyContent: useHamburger ? 'space-between' : 'center', alignItems: 'center', width: '100%', position: 'relative' }}>
           
+          {useHamburger && (
+            <Link to="/" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="nav-brand" style={{ color: 'var(--on-surface)', fontWeight: 700, textDecoration: 'none' }}>
+              Jason Kenneth N
+            </Link>
+          )}
+
           {/* Invisible measurer to compute exact links width */}
           <div 
             ref={linksRef} 
@@ -164,26 +170,28 @@ export default function Navbar() {
           </div>
 
           {/* Mobile/Tablet Hamburger button - Absolute right, hidden on desktop */}
-          <div className="mobile-hamburger" style={{ display: useHamburger ? 'flex' : 'none', position: 'absolute', right: 'var(--gutter)' }}>
-            <button 
-              onClick={() => setDrawerOpen(true)} 
-              style={{
-                background: 'var(--surface-container-low)',
-                border: '1px solid var(--outline-variant)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '0.6rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--on-surface)',
-                boxShadow: 'var(--shadow-sm)',
-                transition: 'all var(--transition-apple)',
-              }}
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: 'clamp(22px, 4vw, 28px)' }}>menu</span>
-            </button>
-          </div>
+          {useHamburger && (
+            <div className="mobile-hamburger">
+              <button 
+                onClick={() => setDrawerOpen(true)} 
+                style={{
+                  background: 'var(--surface-container-low)',
+                  border: '1px solid var(--outline-variant)',
+                  borderRadius: 'var(--radius-lg)',
+                  padding: '0.6rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--on-surface)',
+                  boxShadow: 'var(--shadow-sm)',
+                  transition: 'all var(--transition-apple)',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 'clamp(22px, 4vw, 28px)' }}>menu</span>
+              </button>
+            </div>
+          )}
         </div>
       </nav>
 
@@ -212,6 +220,7 @@ export default function Navbar() {
           flexDirection: 'column',
           boxShadow: 'var(--shadow-lg)',
           padding: '5%',
+          overflowY: 'auto',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '5%' }}>
