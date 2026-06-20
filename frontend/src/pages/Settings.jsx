@@ -372,6 +372,26 @@ function ProfilePanel({ draftProfile, onFieldChange, onSave }) {
           <div style={{ padding: '1rem', background: 'var(--surface-container-low)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--outline-variant)' }}>
             <p className="text-muted" style={{ fontSize: '13.5px', marginBottom: '0.5rem' }}>Select file to upload headshot:</p>
             <input type="file" accept="image/*" onChange={handleFileChange} style={{ fontSize: '13px' }} />
+            {draftProfile.profile_picture && (
+              <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <img
+                  src={getMediaUrl(draftProfile.profile_picture)}
+                  alt="Profile preview"
+                  style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setSelectedFile(null);
+                    onFieldChange('profile_picture', null);
+                  }}
+                  style={{ padding: '0.35rem 0.75rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                >
+                  Delete Photo
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -1977,7 +1997,20 @@ function ContentPanel({ onSave }) {
                     style={{ fontSize: '13px' }}
                   />
                   {formData.image && (
-                    <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          handleFieldChange('image', null);
+                        }}
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                      >
+                        Delete Image
+                      </button>
+                    </div>
                   )}
                 </div>
               </>
@@ -2203,7 +2236,20 @@ function ContentPanel({ onSave }) {
                     style={{ fontSize: '13px' }}
                   />
                   {formData.image && (
-                    <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                    <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          handleFieldChange('image', null);
+                        }}
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                      >
+                        Delete Image
+                      </button>
+                    </div>
                   )}
                 </div>
               </>
@@ -2406,6 +2452,26 @@ function HeroManager({ section, onClose, onSave, profile }) {
             <div style={{ padding: '1rem', background: 'var(--surface-container-low)', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--outline-variant)' }}>
               <p className="text-muted" style={{ fontSize: '13.5px', marginBottom: '0.5rem' }}>Select file to upload headshot:</p>
               <input type="file" accept="image/*" onChange={handleFileChange} style={{ fontSize: '13px' }} />
+              {formData.profile_picture && (
+                <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                  <img
+                    src={getMediaUrl(formData.profile_picture)}
+                    alt="Profile preview"
+                    style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      handleFieldChange('profile_picture', null);
+                    }}
+                    style={{ padding: '0.35rem 0.75rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                  >
+                    Delete Photo
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -3101,7 +3167,20 @@ function CertificationsManager({ section, onClose, onSave, list }) {
                 style={{ fontSize: '13px' }}
               />
               {formData.image && (
-                <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <img src={getMediaUrl(formData.image)} alt="Certificate preview" style={{ width: '80px', height: '60px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      handleFieldChange('image', null);
+                    }}
+                    style={{ padding: '0.25rem 0.5rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                  >
+                    Delete Image
+                  </button>
+                </div>
               )}
             </div>
 
@@ -3314,7 +3393,20 @@ function ProjectsManager({ section, onClose, onSave, list }) {
                 style={{ fontSize: '13px' }}
               />
               {formData.image && (
-                <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', marginTop: '0.5rem', borderRadius: 'var(--radius-sm)' }} />
+                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <img src={getMediaUrl(formData.image)} alt="Project preview" style={{ width: '100px', height: '60px', objectFit: 'cover', borderRadius: 'var(--radius-sm)' }} />
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      handleFieldChange('image', null);
+                    }}
+                    style={{ padding: '0.25rem 0.5rem', fontSize: '12px', color: 'var(--error)', borderColor: 'var(--error)' }}
+                  >
+                    Delete Image
+                  </button>
+                </div>
               )}
             </div>
 

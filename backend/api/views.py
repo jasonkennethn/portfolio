@@ -19,7 +19,7 @@ from .ai_service import AIService
 
 
 class CloudinaryCleanupMixin:
-    """Mixin to delete old Cloudinary files when images are replaced or instances deleted."""
+    """Mixin to delete old Cloudinary files when images are replaced, cleared, or instances deleted."""
     # Subclasses should set this to the list of ImageField/FileField names on their model
     file_fields = []
 
@@ -28,12 +28,20 @@ class CloudinaryCleanupMixin:
         for field_name in self.file_fields:
             old_file = getattr(instance, field_name, None)
             new_file = self.request.FILES.get(field_name)
-            # Only delete old file if a NEW file is being uploaded to replace it
+            # Case 1: A new file is uploaded to replace the old one
             if new_file and old_file and hasattr(old_file, 'name') and old_file.name:
                 try:
                     old_file.delete(save=False)
                 except Exception:
                     pass  # Silently continue if deletion fails
+            # Case 2: The field is explicitly cleared
+            elif field_name in self.request.data:
+                val = self.request.data.get(field_name)
+                if val in (None, '', 'null', 'None') and old_file and hasattr(old_file, 'name') and old_file.name:
+                    try:
+                        old_file.delete(save=False)
+                    except Exception:
+                        pass
         serializer.save()
 
     def perform_destroy(self, instance):

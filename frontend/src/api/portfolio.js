@@ -8,7 +8,9 @@ const FILE_FIELDS = ['image', 'profile_picture', 'company_logo', 'resume_file'];
 export const updateProfile = (id, data) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, val]) => {
-    if (val !== null && val !== undefined) {
+    if (val === null || val === '') {
+      formData.append(key, '');
+    } else if (val !== undefined) {
       // Skip file fields that are just existing URL strings — no need to re-upload
       if (FILE_FIELDS.includes(key) && typeof val === 'string') {
         return;
@@ -45,7 +47,9 @@ export const deleteSection = (id) => client.delete(`/sections/${id}/`);
 const toFormData = (data) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, val]) => {
-    if (val !== null && val !== undefined) {
+    if (val === null || val === '') {
+      formData.append(key, '');
+    } else if (val !== undefined) {
       // Skip file/image fields that are existing URL strings — prevents duplicate uploads
       if (FILE_FIELDS.includes(key) && typeof val === 'string') {
         return;
