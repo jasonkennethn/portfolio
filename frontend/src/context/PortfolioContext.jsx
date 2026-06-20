@@ -7,7 +7,7 @@ const DEFAULT_DATA = {
   profile: {
     name: 'Jason Kenneth N',
     title: 'Software Development Engineer',
-    subtitle: 'Computer Science undergraduate with internship experience in Python, Django, SQL, and backend development. Skilled in building API-driven applications, database-driven systems, and scalable web platforms.',
+    subtitle: 'Software Development Engineer specialized in clean, scalable backend architectures and API-driven systems.',
     email: 'jasonkennethn@gmail.com',
     phone: '+91 6361975397',
     location: 'Bengaluru, Karnataka',

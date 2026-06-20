@@ -1,6 +1,6 @@
 import { usePortfolio } from '../../context/PortfolioContext';
 
-export default function EducationSection() {
+export default function EducationSection({ sectionOverride }) {
   const { education } = usePortfolio();
 
   if (!education || education.length === 0) return null;
@@ -9,8 +9,8 @@ export default function EducationSection() {
     <section className="section" id="education-section">
       <div className="container">
         <div className="section-header">
-          <h2 className="text-headline-lg" style={{ color: 'var(--on-surface)' }}>
-            <span className="text-primary">Education</span>
+          <h2 className="text-headline-lg" style={{ color: 'var(--primary)' }}>
+            {sectionOverride?.label || 'Education'}
           </h2>
         </div>
         <div className="grid grid-2">

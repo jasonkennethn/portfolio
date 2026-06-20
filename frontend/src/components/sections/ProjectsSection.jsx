@@ -1,7 +1,7 @@
 import { usePortfolio } from '../../context/PortfolioContext';
 import ProjectCard from './ProjectCard';
 
-export default function ProjectsSection() {
+export default function ProjectsSection({ sectionOverride }) {
   const { projects } = usePortfolio();
 
   return (
@@ -9,8 +9,8 @@ export default function ProjectsSection() {
       <div className="container">
         {/* Header */}
         <div className="section-header" style={{ marginBottom: '3%' }}>
-          <h2 className="text-headline-lg" style={{ color: 'var(--on-surface)', marginBottom: '2%' }}>
-            Key Projects
+          <h2 className="text-headline-lg" style={{ color: 'var(--primary)', marginBottom: '2%' }}>
+            {sectionOverride?.label || 'Key Projects'}
           </h2>
         </div>
 

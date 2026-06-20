@@ -103,6 +103,7 @@ export default function SkeletonLoading() {
           .skeleton-hero-grid {
             grid-template-columns: 1fr !important;
             text-align: center !important;
+            gap: 1.5rem !important;
           }
           .skeleton-hero-grid > div {
             align-items: center !important;
@@ -110,6 +111,13 @@ export default function SkeletonLoading() {
           }
           .skeleton-hero-grid .skeleton-block {
             margin: 0 auto;
+          }
+          /* Avatar on top on mobile */
+          .skeleton-hero-grid > div:last-child {
+            order: -1;
+          }
+          .section {
+            padding: 12% 0 !important;
           }
         }
       `}</style>

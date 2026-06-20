@@ -65,8 +65,8 @@ export default function HeroSection({ profileOverride }) {
             {/* Social Links - Improved Glass Circular Buttons */}
             <div style={{
               display: 'flex',
-              gap: '3%',
-              paddingTop: '2%',
+              gap: '12px',
+              paddingTop: '12px',
               justifyContent: hasPic ? 'flex-start' : 'center',
               width: '100%',
             }}>
@@ -150,55 +150,45 @@ export default function HeroSection({ profileOverride }) {
         }
         @media (max-width: 768px) {
           .hero-grid.with-pic {
-            grid-template-columns: 1.25fr 0.75fr !important;
-            gap: 3% !important;
+            grid-template-columns: 1fr !important;
+            text-align: center !important;
+            gap: 1.5rem !important;
           }
           .hero-title {
-            font-size: clamp(20px, 6vw, 28px) !important;
+            font-size: clamp(24px, 7vw, 36px) !important;
           }
           .hero-subtitle {
-            font-size: clamp(13px, 3.5vw, 16px) !important;
+            font-size: clamp(15px, 4.5vw, 18px) !important;
           }
           .hero-desc {
-            font-size: clamp(12px, 3vw, 14px) !important;
-            line-height: 1.4 !important;
+            font-size: clamp(13px, 3vw, 15px) !important;
+            line-height: 1.5 !important;
+            margin: 0 auto !important;
           }
           .hero-pic-container {
-            max-width: 60% !important;
+            max-width: clamp(160px, 40vw, 220px) !important;
             border-radius: var(--radius-2xl) !important;
+            margin: 0 auto !important;
+            order: -1;
           }
           .hero-pic-container img {
             border-radius: var(--radius-xl) !important;
           }
           .hero-text-container {
-            gap: 2% !important;
-          }
-          .hero-btn-container {
-            gap: 2% !important;
-            padding-top: 2% !important;
-          }
-          .hero-btn-container .btn {
-            padding: 0.4rem 0.8rem !important;
-            font-size: clamp(11px, 2.8vw, 13px) !important;
-            border-radius: var(--radius-md) !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .hero-grid.with-pic {
-            grid-template-columns: 1fr !important;
-            text-align: center !important;
-          }
-          .hero-text-container {
+            gap: 12px !important;
             align-items: center !important;
             text-align: center !important;
+            margin: 0 auto !important;
           }
           .hero-btn-container {
+            gap: 12px !important;
+            padding-top: 12px !important;
             justify-content: center !important;
           }
-          .hero-pic-container {
-            max-width: 50% !important;
-            margin: 0 auto !important;
-            order: -1;
+          .hero-btn-container .btn {
+            padding: 0.5rem 1rem !important;
+            font-size: clamp(12px, 3vw, 14px) !important;
+            border-radius: var(--radius-md) !important;
           }
         }
       `}</style>

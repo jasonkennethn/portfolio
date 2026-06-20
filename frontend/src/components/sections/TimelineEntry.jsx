@@ -1,6 +1,6 @@
 export default function TimelineEntry({ experience }) {
   return (
-    <div className="glass-card" style={{ padding: '5%', width: '100%', maxWidth: '90%', margin: '0 auto' }}>
+    <div className="glass-card" style={{ padding: '5%', width: '100%', maxWidth: '100%', margin: '0 auto' }}>
       <TimelineCardContent experience={experience} />
     </div>
   );

@@ -140,7 +140,7 @@ export default function CustomSection({ sectionOverride }) {
       <div className="container">
         {/* Header */}
         <div className="section-header" style={{ marginBottom: '3rem' }}>
-          <h2 className="text-headline-lg" style={{ color: 'var(--on-surface)', marginBottom: '0.5rem' }}>
+          <h2 className="text-headline-lg" style={{ color: 'var(--primary)', marginBottom: '0.5rem' }}>
             {section.label}
           </h2>
           {section.description && (

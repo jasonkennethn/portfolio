@@ -1,7 +1,7 @@
 import { usePortfolio } from '../../context/PortfolioContext';
 import TimelineEntry from './TimelineEntry';
 
-export default function ExperienceSection() {
+export default function ExperienceSection({ sectionOverride }) {
   const { experiences } = usePortfolio();
 
   if (!experiences || experiences.length === 0) return null;
@@ -11,8 +11,8 @@ export default function ExperienceSection() {
       <div className="container" style={{ position: 'relative' }}>
         {/* Header */}
         <div className="section-header" style={{ marginBottom: '3%' }}>
-          <h2 className="text-headline-lg" style={{ color: 'var(--on-surface)' }}>
-            Professional Experience
+          <h2 className="text-headline-lg" style={{ color: 'var(--primary)' }}>
+            {sectionOverride?.label || 'Professional Experience'}
           </h2>
         </div>
 

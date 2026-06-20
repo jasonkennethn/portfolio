@@ -544,7 +544,7 @@ img {
 
 /* ── Section ── */
 .section {
-  padding: 5% 0;
+  padding: 8% 0;
 }
 
 .section-header {
@@ -630,18 +630,18 @@ img {
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ── Mobile Breakpoint ── */
 @media (max-width: 768px) {
   :root {
-    --gutter: 5%;
-    --section-gap: 8%;
+    --gutter: 3%;
+    --container-max: 94%;
+    --section-gap: 12%;
   }
 
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
   .nav-links { display: none; }
 
   .section {
-    padding: 8% 0;
+    padding: 12% 0;
   }
 
   .section-header {
