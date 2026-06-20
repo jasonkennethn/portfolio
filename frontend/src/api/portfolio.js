@@ -2,12 +2,21 @@ import client from './client';
 
 export const fetchPortfolioData = () => client.get('/portfolio/');
 
+// Fields that hold uploaded files — skip these if they are existing URL strings
+const FILE_FIELDS = ['image', 'profile_picture', 'company_logo', 'resume_file'];
+
 export const updateProfile = (id, data) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, val]) => {
     if (val !== null && val !== undefined) {
+      // Skip file fields that are just existing URL strings — no need to re-upload
+      if (FILE_FIELDS.includes(key) && typeof val === 'string') {
+        return;
+      }
       if (val instanceof File) {
         formData.append(key, val);
+      } else if (Array.isArray(val)) {
+        formData.append(key, JSON.stringify(val));
       } else {
         formData.append(key, val);
       }
@@ -37,8 +46,9 @@ const toFormData = (data) => {
   const formData = new FormData();
   Object.entries(data).forEach(([key, val]) => {
     if (val !== null && val !== undefined) {
-      if (key === 'image' && typeof val === 'string') {
-        return; // skip existing URL strings to let Django keep the current file
+      // Skip file/image fields that are existing URL strings — prevents duplicate uploads
+      if (FILE_FIELDS.includes(key) && typeof val === 'string') {
+        return;
       }
       if (val instanceof File) {
         formData.append(key, val);
