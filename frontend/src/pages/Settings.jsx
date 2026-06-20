@@ -641,7 +641,9 @@ function SectionsPanel({ draftSections, onSectionsChange, onSave }) {
       : `Delete section "${section.label}"? This cannot be undone.`;
     if (!confirm(confirmMsg)) return;
     try {
-      await deleteSection(section.id);
+      if (section.id) {
+        await deleteSection(section.id);
+      }
       const updatedSections = draftSections.filter(s => s.key !== section.key);
       onSectionsChange(updatedSections);
       onSave();
