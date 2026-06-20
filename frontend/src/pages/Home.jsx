@@ -8,6 +8,7 @@ import EducationSection from '../components/sections/EducationSection';
 import CertificationsSection from '../components/sections/CertificationsSection';
 import AchievementsSection from '../components/sections/AchievementsSection';
 import CustomSection from '../components/sections/CustomSection';
+import SkeletonLoading from '../components/ui/SkeletonLoading';
 
 const SECTION_MAP = {
   hero: HeroSection,
@@ -19,7 +20,7 @@ const SECTION_MAP = {
 };
 
 export default function Home({ isPreview = false, profileOverride = null, sectionsOverride = null }) {
-  const { sections } = usePortfolio();
+  const { sections, loading } = usePortfolio();
   const location = useLocation();
 
   useEffect(() => {
@@ -37,6 +38,10 @@ export default function Home({ isPreview = false, profileOverride = null, sectio
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [location, isPreview]);
+
+  if (loading && !isPreview) {
+    return <SkeletonLoading />;
+  }
 
   // Render all active, visible sections ordered by order preference
   const targetSections = isPreview && sectionsOverride ? sectionsOverride : sections;
