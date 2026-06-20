@@ -14,7 +14,23 @@ class AIService:
     """Service for AI-powered portfolio features using Google Gemini."""
 
     def __init__(self):
-        self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        client_kwargs = {'api_key': settings.GEMINI_API_KEY}
+        
+        # Configure proxy for Google GenAI if running in environments like PythonAnywhere
+        proxy_url = getattr(settings, 'GEMINI_API_PROXY', None)
+        if proxy_url:
+            import httpx
+            from google.genai import types
+            client_kwargs['http_options'] = types.HttpOptions(
+                client_args={
+                    "transport": httpx.HTTPTransport(proxy=proxy_url),
+                },
+                async_client_args={
+                    "transport": httpx.AsyncHTTPTransport(proxy=proxy_url),
+                },
+            )
+            
+        self.client = genai.Client(**client_kwargs)
         self.model = 'gemini-2.5-flash'
 
     def get_portfolio_recommendations(self, profile_data):
