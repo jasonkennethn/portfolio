@@ -118,12 +118,49 @@ const DEFAULT_DATA = {
   config: { theme: 'light', primary_color: '#494BD6', enable_glassmorphism: true },
 };
 
+const EMPTY_DATA = {
+  profile: {
+    name: '',
+    title: '',
+    subtitle: '',
+    email: '',
+    phone: '',
+    location: '',
+    portfolio_url: '',
+    linkedin_url: '',
+    github_url: '',
+    show_profile_picture: false,
+    availability_status: '',
+  },
+  skills: [],
+  projects: [],
+  experiences: [],
+  education: [],
+  certifications: [],
+  achievements: [],
+  stats: [],
+  sections: [
+    { key: 'hero', label: 'Hero Header', description: 'Primary intro, headline, and CTA buttons.', is_visible: true, is_mandatory: true, icon: 'person' },
+    { key: 'stats', label: 'Quick Stats', description: 'Key metrics at a glance.', is_visible: true, is_mandatory: false, icon: 'analytics' },
+    { key: 'expertise', label: 'Core Expertise', description: 'Technical skill categories.', is_visible: true, is_mandatory: false, icon: 'hub' },
+    { key: 'process', label: 'Technical Process', description: 'System thinking workflow.', is_visible: true, is_mandatory: false, icon: 'terminal' },
+    { key: 'projects', label: 'Featured Projects', description: 'Engineering projects.', is_visible: true, is_mandatory: false, icon: 'folder' },
+    { key: 'experience', label: 'Work Timeline', description: 'Professional experience.', is_visible: true, is_mandatory: false, icon: 'work' },
+    { key: 'education', label: 'Education', description: 'Academic background.', is_visible: true, is_mandatory: false, icon: 'school' },
+    { key: 'certifications', label: 'Certifications', description: 'Professional credentials.', is_visible: true, is_mandatory: false, icon: 'verified' },
+    { key: 'achievements', label: 'Achievements', description: 'Awards and recognition.', is_visible: true, is_mandatory: false, icon: 'emoji_events' },
+    { key: 'cta', label: 'Call to Action', description: 'Contact CTA section.', is_visible: true, is_mandatory: false, icon: 'mail' },
+  ],
+  config: { theme: 'light', primary_color: '#494BD6', enable_glassmorphism: true },
+};
+
 export function PortfolioProvider({ children }) {
-  const [data, setData] = useState(DEFAULT_DATA);
+  const [data, setData] = useState(EMPTY_DATA);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const loadData = useCallback(async () => {
+    const startTime = Date.now();
     try {
       const res = await fetchPortfolioData();
       const d = res.data;
@@ -143,20 +180,18 @@ export function PortfolioProvider({ children }) {
       console.warn('Using fallback data:', err.message);
       setData(DEFAULT_DATA);
     } finally {
-      // Background fetch completes
+      // Enforce showing the skeleton loading for at least 100ms (0.1 seconds)
+      const elapsedTime = Date.now() - startTime;
+      const minDuration = 100;
+      const remainingTime = Math.max(0, minDuration - elapsedTime);
+      setTimeout(() => {
+        setLoading(false);
+      }, remainingTime);
     }
   }, []);
 
   useEffect(() => {
-    // Start background data load
     loadData();
-
-    // Limit visible skeleton loading to exactly 0.02 seconds (20ms)
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 20);
-
-    return () => clearTimeout(timer);
   }, [loadData]);
 
   const updateSections = (newSections) => {
