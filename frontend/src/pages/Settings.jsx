@@ -1711,6 +1711,7 @@ function BlockEditorPanel({ section, onClose, onUpdateSection }) {
                     style={{ width: '100%', minHeight: '60px', padding: '0.4rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)' }}
                     placeholder="Enter announcement text..."
                   />
+                  <AIEnhanceButton value={block.text} onApply={(val) => handleBlockChange(idx, 'text', val)} />
                 </div>
               </div>
             )}
@@ -2079,6 +2080,7 @@ function ContentPanel({ onSave }) {
                     onChange={e => handleFieldChange('description', e.target.value)}
                     style={{ width: '100%', minHeight: '80px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
                   />
+                  <AIEnhanceButton value={formData.description} onApply={(val) => handleFieldChange('description', val)} />
                 </div>
                 <div>
                   <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Highlights / Bullets (one per line)</label>
@@ -2088,6 +2090,7 @@ function ContentPanel({ onSave }) {
                     placeholder="Enter each highlight bullet on a new line..."
                     style={{ width: '100%', minHeight: '100px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
                   />
+                  <AIEnhanceButton value={formData.highlights} onApply={(val) => handleFieldChange('highlights', val)} />
                 </div>
                 <div>
                   <label style={{ fontWeight: 600, display: 'block', fontSize: '13px', marginBottom: '0.25rem' }}>Technologies (comma-separated)</label>
@@ -3600,6 +3603,7 @@ function ExperiencesManager({ section, onClose, onSave, list }) {
                 onChange={e => handleFieldChange('description', e.target.value)}
                 style={{ width: '100%', minHeight: '60px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
               />
+              <AIEnhanceButton value={formData.description} onApply={(val) => handleFieldChange('description', val)} />
             </div>
 
             <div>
@@ -3610,6 +3614,7 @@ function ExperiencesManager({ section, onClose, onSave, list }) {
                 placeholder="Enter each highlight bullet on a new line..."
                 style={{ width: '100%', minHeight: '100px', padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--outline-variant)', background: 'var(--surface-container-low)', color: 'var(--on-surface)', resize: 'vertical' }}
               />
+              <AIEnhanceButton value={formData.highlights} onApply={(val) => handleFieldChange('highlights', val)} />
             </div>
 
             <div>
