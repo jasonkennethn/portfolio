@@ -393,10 +393,18 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
 
-              <div className="admin-actions w-full sm:w-auto justify-end">
+              <div className="admin-actions w-full sm:w-auto justify-end flex items-center gap-2.5">
+                <button
+                  onClick={handleSave}
+                  className="apple-button btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save</span>
+                </button>
+
                 <button
                   onClick={handleLogout}
-                  className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-500 transition-all cursor-pointer inline-flex items-center gap-2 text-xs font-bold"
+                  className="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-500 transition-all cursor-pointer inline-flex items-center gap-2 text-xs font-bold"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />

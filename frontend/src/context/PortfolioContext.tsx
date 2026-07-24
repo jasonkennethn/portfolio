@@ -224,6 +224,12 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(defaultPortfolioData);
 
   useEffect(() => {
+    if (typeof document !== 'undefined' && data?.hero?.siteTitle) {
+      document.title = data.hero.siteTitle;
+    }
+  }, [data?.hero?.siteTitle]);
+
+  useEffect(() => {
     const loadSaved = async () => {
       // 1. Instant local render from storage if available
       try {
