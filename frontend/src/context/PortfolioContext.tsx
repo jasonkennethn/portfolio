@@ -198,12 +198,16 @@ const defaultPortfolioData: PortfolioData = {
       skills: ['Git', 'GitHub', 'Linux', 'Docker', 'Nginx', 'GitHub Actions', 'AWS (Basics)', 'OCI (Basics)', 'ServiceNow']
     },
     {
-      title: 'Core CS Concepts',
-      skills: ['Data Structures & Algorithms', 'Object-Oriented Programming', 'DBMS', 'Operating Systems', 'Computer Networks', 'Software Engineering']
+      title: 'Languages & Core',
+      skills: ['Python', 'SQL', 'Java', 'HTML/CSS', 'JavaScript', 'TypeScript']
     },
     {
-      title: 'Languages',
-      skills: ['English', 'Hindi', 'Kannada', 'Telugu']
+      title: 'Backend & Frameworks',
+      skills: ['Django', 'REST Framework', 'FastAPI', 'Node.js', 'Next.js']
+    },
+    {
+      title: 'Databases & Cloud',
+      skills: ['PostgreSQL', 'NeonDB', 'Oracle Cloud (OCI)', 'AWS', 'Docker', 'Git']
     }
   ]
 };
@@ -224,7 +228,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(defaultPortfolioData);
 
   useEffect(() => {
-    const titleToSet = data?.hero?.siteTitle || 'Jason Kenneth N | Portfolio';
+    const titleToSet: string = data?.hero?.siteTitle || defaultPortfolioData.hero.siteTitle || 'Jason Kenneth N | Software Engineer Portfolio';
     if (typeof document !== 'undefined') {
       document.title = titleToSet;
       let el = document.querySelector('title');
@@ -242,7 +246,17 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-          setData(JSON.parse(saved));
+          const parsed = JSON.parse(saved);
+          const merged = {
+            ...defaultPortfolioData,
+            ...parsed,
+            hero: {
+              ...defaultPortfolioData.hero,
+              ...(parsed.hero || {}),
+              siteTitle: parsed.hero?.siteTitle || defaultPortfolioData.hero.siteTitle
+            }
+          };
+          setData(merged);
         }
       } catch {}
 
@@ -253,9 +267,18 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
           const result = await res.json();
           if (result.success) {
             if (result.data && Object.keys(result.data).length > 0) {
-              setData(result.data);
+              const merged = {
+                ...defaultPortfolioData,
+                ...result.data,
+                hero: {
+                  ...defaultPortfolioData.hero,
+                  ...(result.data.hero || {}),
+                  siteTitle: result.data.hero?.siteTitle || defaultPortfolioData.hero.siteTitle
+                }
+              };
+              setData(merged);
               try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(result.data));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
               } catch {}
             } else {
               // Seed database with default data
@@ -277,7 +300,19 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     const handleStorageEvent = () => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) setData(JSON.parse(saved));
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const merged = {
+            ...defaultPortfolioData,
+            ...parsed,
+            hero: {
+              ...defaultPortfolioData.hero,
+              ...(parsed.hero || {}),
+              siteTitle: parsed.hero?.siteTitle || defaultPortfolioData.hero.siteTitle
+            }
+          };
+          setData(merged);
+        }
       } catch {}
     };
 
@@ -291,9 +326,18 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateData = (newData: PortfolioData) => {
-    setData(newData);
+    const merged = {
+      ...defaultPortfolioData,
+      ...newData,
+      hero: {
+        ...defaultPortfolioData.hero,
+        ...(newData.hero || {}),
+        siteTitle: newData.hero?.siteTitle || defaultPortfolioData.hero.siteTitle
+      }
+    };
+    setData(merged);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       window.dispatchEvent(new Event('portfolio_updated'));
     } catch {}
 
@@ -301,7 +345,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: newData })
+      body: JSON.stringify({ data: merged })
     }).catch((err) => console.warn('Failed to persist portfolio data to backend:', err));
   };
 

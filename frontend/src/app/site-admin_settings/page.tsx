@@ -452,7 +452,16 @@ export default function AdminSettingsPage() {
                   <input
                     type="text"
                     value={formData.hero.siteTitle || ''}
-                    onChange={(e) => setFormData({ ...formData, hero: { ...formData.hero, siteTitle: e.target.value } })}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFormData({ ...formData, hero: { ...formData.hero, siteTitle: val } });
+                      if (typeof document !== 'undefined') {
+                        const titleToSet = val || 'Jason Kenneth N | Software Engineer Portfolio';
+                        document.title = titleToSet;
+                        const tag = document.getElementsByTagName('title')[0];
+                        if (tag) tag.textContent = titleToSet;
+                      }
+                    }}
                     placeholder="e.g. Jason Kenneth N | Software Engineer Portfolio"
                     className="admin-input font-medium"
                   />
