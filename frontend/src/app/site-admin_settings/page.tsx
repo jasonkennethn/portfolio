@@ -235,20 +235,10 @@ export default function AdminSettingsPage() {
         setIsAuthenticated(true);
         sessionStorage.setItem('admin_authenticated', 'true');
       } else {
-        if (username === 'admin' && password === 'admin123') {
-          setIsAuthenticated(true);
-          sessionStorage.setItem('admin_authenticated', 'true');
-        } else {
-          setError(data.error || 'Invalid credentials. Required: admin / admin123');
-        }
+        setError(data.error || 'Invalid superadmin credentials.');
       }
     } catch {
-      if (username === 'admin' && password === 'admin123') {
-        setIsAuthenticated(true);
-        sessionStorage.setItem('admin_authenticated', 'true');
-      } else {
-        setError('Invalid credentials. Required: admin / admin123');
-      }
+      setError('Could not connect to backend authentication server.');
     } finally {
       setIsLoading(false);
     }
