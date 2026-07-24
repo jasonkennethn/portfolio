@@ -212,6 +212,8 @@ interface PortfolioContextType {
   resetData: () => void;
 }
 
+import { getApiBaseUrl } from '@/config/api';
+
 const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'portfolio_custom_data_v9';
@@ -231,7 +233,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
 
       // 2. Fetch authoritative synced data from NeonDB PostgreSQL database
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/portfolio-data/');
+        const res = await fetch(`${getApiBaseUrl()}/api/portfolio-data/`);
         if (res.ok) {
           const result = await res.json();
           if (result.success) {
@@ -242,7 +244,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
               } catch {}
             } else {
               // Seed database with default data
-              fetch('http://127.0.0.1:8000/api/portfolio-data/', {
+              fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ data: defaultPortfolioData })
@@ -281,7 +283,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     } catch {}
 
     // Persist to NeonDB database
-    fetch('http://127.0.0.1:8000/api/portfolio-data/', {
+    fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data: newData })
@@ -295,7 +297,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       window.dispatchEvent(new Event('portfolio_updated'));
     } catch {}
 
-    fetch('http://127.0.0.1:8000/api/portfolio-data/', {
+    fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ data: defaultPortfolioData })

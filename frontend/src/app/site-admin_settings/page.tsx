@@ -34,6 +34,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { usePortfolio, PortfolioData } from '@/context/PortfolioContext';
+import { getApiBaseUrl } from '@/config/api';
 
 export default function AdminSettingsPage() {
   const { data: globalData, updateData, resetData } = usePortfolio();
@@ -100,7 +101,7 @@ export default function AdminSettingsPage() {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/upload/', {
+      const res = await fetch(`${getApiBaseUrl()}/api/upload/`, {
         method: 'POST',
         body: uploadFormData
       });
@@ -153,7 +154,7 @@ export default function AdminSettingsPage() {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/upload/', {
+      const res = await fetch(`${getApiBaseUrl()}/api/upload/`, {
         method: 'POST',
         body: uploadFormData
       });
@@ -165,7 +166,7 @@ export default function AdminSettingsPage() {
           setFormData(updatedData);
           updateData(updatedData);
         } else {
-          const updatedData = { ...formData, hero: { ...formData.hero, resumeUrl: 'http://127.0.0.1:8000/api/download-resume/' } };
+          const updatedData = { ...formData, hero: { ...formData.hero, resumeUrl: `${getApiBaseUrl()}/api/download-resume/` } };
           setFormData(updatedData);
           updateData(updatedData);
         }
@@ -210,7 +211,7 @@ export default function AdminSettingsPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/admin-login/', {
+      const response = await fetch(`${getApiBaseUrl()}/api/admin-login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

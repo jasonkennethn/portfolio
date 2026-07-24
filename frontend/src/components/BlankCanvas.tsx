@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { getApiBaseUrl } from '@/config/api';
 import { 
   GraduationCap, 
   Code2, 
@@ -56,7 +57,7 @@ export function BlankCanvas() {
     setSendError('');
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/contact/', {
+      const res = await fetch(`${getApiBaseUrl()}/api/contact/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(contactForm)
