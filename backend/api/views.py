@@ -50,6 +50,22 @@ def admin_login(request):
     username = request.data.get('username')
     password = request.data.get('password')
 
+    env_username = os.getenv('ADMIN_USERNAME', 'admin')
+    env_password = os.getenv('ADMIN_PASSWORD', 'admin')
+
+    # 1. Validate against environment variables (.env)
+    if username == env_username and password == env_password:
+        return Response({
+            "success": True,
+            "message": "Superadmin authentication successful via environment variables",
+            "user": {
+                "username": env_username,
+                "email": f"{env_username}@portfolio.com",
+                "is_superuser": True
+            }
+        })
+
+    # 2. Fallback to Django DB superuser if created
     user = authenticate(request, username=username, password=password)
     if user is not None and user.is_staff:
         return Response({
