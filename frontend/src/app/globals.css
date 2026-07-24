@@ -1,0 +1,625 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+}
+
+:root {
+  /* Design System from jasonkennethn.vercel.app */
+  --primary: #494bd6;
+  --primary-hover: #3b3dbb;
+  --primary-container: rgba(73, 75, 214, 0.1);
+  --secondary: #10b981;
+  --background: #F8FAFC;
+  --foreground: #1a1a2e;
+  --foreground-muted: #64748b;
+  --card-bg: #FFFFFF;
+  --card-border: #e2e8f0;
+  --outline-variant: #e2e8f0;
+  --glass-border: rgba(226, 232, 240, 0.8);
+  --apple-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-apple: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 16px 32px -8px rgba(15, 23, 42, 0.1);
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior-y: contain;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Font utilities */
+.font-code {
+  font-family: var(--font-mono);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* GPU Layer */
+.gpu-layer {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Apple Premium Smooth Canvas Background */
+.bg-executive-mesh {
+  background-color: #FAFBFC;
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(73, 75, 214, 0.07) 0px, transparent 55%),
+    radial-gradient(at 85% 25%, rgba(99, 102, 241, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 60%, rgba(241, 245, 249, 0.9) 0px, transparent 65%),
+    radial-gradient(at 20% 85%, rgba(73, 75, 214, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 90%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+/* Glass Card */
+.glass-panel {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-apple), box-shadow var(--transition-apple), border-color var(--transition-apple);
+}
+
+.glass-panel:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px -6px rgba(73, 75, 214, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* Section Title - italic serif from live site */
+.section-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: -0.01em;
+}
+
+/* Navbar */
+#main-navbar {
+  background: var(--background);
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.navbar-inner {
+  width: 100%;
+}
+
+.nav-link:hover {
+  color: var(--primary) !important;
+}
+
+/* Project Card from live site */
+.project-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-apple);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.project-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px -6px rgba(73, 75, 214, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+  transform: translateY(-6px);
+}
+
+.project-card-image {
+  width: 100%;
+  padding-top: 45%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card-image .code-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #94a3b8;
+  font-size: 42px;
+  opacity: 0.5;
+}
+
+.project-card-body {
+  padding: 6%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Experience Card */
+.experience-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: 5% 6%;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-apple);
+}
+
+.experience-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px -6px rgba(73, 75, 214, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: var(--primary);
+}
+
+/* Education Card */
+.education-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  padding: 5% 6%;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-apple);
+}
+
+.education-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px -6px rgba(73, 75, 214, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: var(--primary);
+}
+
+/* Certification Card */
+.cert-card {
+  background: var(--card-bg);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all var(--transition-apple);
+}
+
+.cert-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px -6px rgba(73, 75, 214, 0.15), 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: var(--primary);
+}
+
+.cert-image-container {
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: 4%;
+}
+
+.cert-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-apple);
+}
+
+.cert-card:hover .cert-image-container img {
+  transform: scale(1.05);
+}
+
+/* Tech Pill Tag */
+.tech-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+
+.tech-pill:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Tactile Buttons */
+.apple-button {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  transition: transform 0.3s var(--apple-ease), background-color 0.3s var(--apple-ease), border-color 0.3s var(--apple-ease), box-shadow 0.3s var(--apple-ease);
+}
+
+.apple-button:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background-color: var(--primary) !important;
+  border: 2px solid transparent !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(73, 75, 214, 0.3) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover) !important;
+  border-color: #FFFFFF !important;
+  box-shadow: var(--shadow-lg), 0 0 0 4px rgba(73, 75, 214, 0.3) !important;
+  transform: translateY(-4px);
+}
+
+.btn-secondary {
+  background-color: var(--card-bg) !important;
+  border: 2px solid var(--card-border) !important;
+  color: var(--foreground) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.btn-secondary:hover {
+  background-color: var(--card-bg) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(73, 75, 214, 0.2) !important;
+  transform: translateY(-4px);
+}
+
+.social-icon-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 9999px;
+  border: 2px solid var(--card-border) !important;
+  color: var(--foreground-muted) !important;
+  background-color: var(--card-bg) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--apple-ease);
+}
+
+.social-icon-btn:hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+  background-color: rgba(73, 75, 214, 0.05) !important;
+  box-shadow: var(--shadow-md), 0 0 0 4px rgba(73, 75, 214, 0.2) !important;
+  transform: scale(1.1);
+}
+
+/* Availability Badge */
+.availability-badge {
+  border-radius: 9999px;
+  background: rgba(73, 75, 214, 0.06);
+  border: 1px solid rgba(73, 75, 214, 0.15);
+}
+
+.availability-dot {
+  border-radius: 9999px;
+  background: var(--secondary);
+  width: 8px;
+  height: 8px;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Smooth Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Hardware Performance Optimization for Apple-smoothness */
+.project-card,
+.experience-card,
+.education-card,
+.cert-card,
+.apple-button,
+.social-icon-btn,
+.nav-link {
+  will-change: transform, box-shadow, border-color;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ========================================
+   ADMIN CMS PANEL STYLES
+   ======================================== */
+
+/* Allow scrolling on admin page */
+.admin-cms-root {
+  overflow: auto !important;
+  height: auto !important;
+}
+
+.admin-cms-root body,
+body:has(.admin-cms-root) {
+  overflow: auto !important;
+  height: auto !important;
+}
+
+/* Admin glass panels should NOT lift on hover */
+.admin-cms-root .glass-panel:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  border-color: var(--card-border);
+}
+
+/* Admin Header Card */
+.admin-header-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFF 100%);
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Admin Tab Navigation */
+.admin-tab-bar {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.admin-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.25s var(--apple-ease);
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #64748b;
+}
+
+.admin-tab:hover {
+  background: rgba(255, 255, 255, 0.7);
+  color: #334155;
+}
+
+.admin-tab.active {
+  background: #FFFFFF;
+  color: var(--primary);
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* Admin Content Card */
+.admin-content-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Admin Section Title */
+.admin-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.admin-section-title .icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(73, 75, 214, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Admin Input Fields */
+.admin-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #FAFBFC;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.admin-input:focus {
+  border-color: var(--primary);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(73, 75, 214, 0.08);
+}
+
+.admin-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Admin Label */
+.admin-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Admin Item Card (for projects, experiences, etc.) */
+.admin-item-card {
+  padding: 24px;
+  border-radius: 16px;
+  background: #FAFBFC;
+  border: 1.5px solid #e2e8f0;
+  transition: border-color 0.2s var(--apple-ease);
+}
+
+.admin-item-card:hover {
+  border-color: #cbd5e1;
+}
+
+/* Admin Badge */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgba(73, 75, 214, 0.08), rgba(99, 102, 241, 0.06));
+  color: var(--primary);
+  border: 1px solid rgba(73, 75, 214, 0.12);
+}
+
+/* Admin Delete Button */
+.admin-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #dc2626;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.admin-delete-btn:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* Admin Upload Zone */
+.admin-upload-zone {
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1.5px dashed #cbd5e1;
+  transition: all 0.2s var(--apple-ease);
+}
+
+.admin-upload-zone:hover {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #f8faff 0%, #eef2ff 100%);
+}
+
+/* Admin Action Buttons Row */
+.admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Admin Success Banner */
+.admin-success-banner {
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1.5px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  animation: slideDown 0.3s var(--apple-ease);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Admin Grid */
+@media (max-width: 768px) {
+  .admin-tab-bar {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .admin-tab {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .admin-content-card {
+    padding: 20px !important;
+  }
+
+  .admin-item-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-tab {
+    padding: 8px 10px;
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .admin-tab .tab-label {
+    display: none;
+  }
+}
