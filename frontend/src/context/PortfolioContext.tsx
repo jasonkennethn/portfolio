@@ -227,26 +227,45 @@ const STORAGE_KEY = 'portfolio_custom_data_v9';
 export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(defaultPortfolioData);
 
+  // Synchronize document title and DOM title element with MutationObserver for persistent title
   useEffect(() => {
     const titleToSet: string = data?.hero?.siteTitle || defaultPortfolioData.hero.siteTitle || 'Jason Kenneth N | Software Engineer Portfolio';
-    if (typeof document !== 'undefined') {
-      document.title = titleToSet;
-      let el = document.querySelector('title');
-      if (!el) {
-        el = document.createElement('title');
-        document.head.appendChild(el);
+    
+    if (typeof document === 'undefined') return;
+
+    const enforceTitle = () => {
+      if (document.title !== titleToSet) {
+        document.title = titleToSet;
       }
-      el.innerText = titleToSet;
+      const titleEl = document.getElementsByTagName('title')[0];
+      if (titleEl && titleEl.textContent !== titleToSet) {
+        titleEl.textContent = titleToSet;
+      }
+    };
+
+    enforceTitle();
+
+    const observer = new MutationObserver(enforceTitle);
+    const titleEl = document.getElementsByTagName('title')[0];
+    if (titleEl) {
+      observer.observe(titleEl, { childList: true, characterData: true, subtree: true });
     }
+    observer.observe(document.head, { childList: true });
+
+    return () => observer.disconnect();
   }, [data?.hero?.siteTitle]);
 
   useEffect(() => {
     const loadSaved = async () => {
       // 1. Instant local render from storage if available
+      let localSiteTitle = '';
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
+          if (parsed.hero?.siteTitle) {
+            localSiteTitle = parsed.hero.siteTitle;
+          }
           const merged = {
             ...defaultPortfolioData,
             ...parsed,
@@ -265,29 +284,29 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
         const res = await fetch(`${getApiBaseUrl()}/api/portfolio-data/`);
         if (res.ok) {
           const result = await res.json();
-          if (result.success) {
-            if (result.data && Object.keys(result.data).length > 0) {
-              const merged = {
-                ...defaultPortfolioData,
-                ...result.data,
-                hero: {
-                  ...defaultPortfolioData.hero,
-                  ...(result.data.hero || {}),
-                  siteTitle: result.data.hero?.siteTitle || defaultPortfolioData.hero.siteTitle
-                }
-              };
-              setData(merged);
-              try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-              } catch {}
-            } else {
-              // Seed database with default data
-              fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: defaultPortfolioData })
-              }).catch(() => {});
-            }
+          if (result.success && result.data && Object.keys(result.data).length > 0) {
+            const backendSiteTitle = result.data.hero?.siteTitle;
+            const finalSiteTitle = backendSiteTitle || localSiteTitle || defaultPortfolioData.hero.siteTitle;
+            const merged = {
+              ...defaultPortfolioData,
+              ...result.data,
+              hero: {
+                ...defaultPortfolioData.hero,
+                ...(result.data.hero || {}),
+                siteTitle: finalSiteTitle
+              }
+            };
+            setData(merged);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+            } catch {}
+          } else if (result.success) {
+            // Seed database with default data
+            fetch(`${getApiBaseUrl()}/api/portfolio-data/`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data: defaultPortfolioData })
+            }).catch(() => {});
           }
         }
       } catch (err) {
