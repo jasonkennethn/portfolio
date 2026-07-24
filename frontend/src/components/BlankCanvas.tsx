@@ -46,8 +46,15 @@ export function BlankCanvas() {
   const { hero, projects, experiences, education, certifications, achievements, skillCategories } = data;
 
   React.useEffect(() => {
-    if (hero?.siteTitle) {
-      document.title = hero.siteTitle;
+    const titleToSet = hero?.siteTitle || 'Jason Kenneth N | Portfolio';
+    if (typeof document !== 'undefined') {
+      document.title = titleToSet;
+      let el = document.querySelector('title');
+      if (!el) {
+        el = document.createElement('title');
+        document.head.appendChild(el);
+      }
+      el.innerText = titleToSet;
     }
   }, [hero?.siteTitle]);
 

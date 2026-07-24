@@ -224,8 +224,15 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PortfolioData>(defaultPortfolioData);
 
   useEffect(() => {
-    if (typeof document !== 'undefined' && data?.hero?.siteTitle) {
-      document.title = data.hero.siteTitle;
+    const titleToSet = data?.hero?.siteTitle || 'Jason Kenneth N | Portfolio';
+    if (typeof document !== 'undefined') {
+      document.title = titleToSet;
+      let el = document.querySelector('title');
+      if (!el) {
+        el = document.createElement('title');
+        document.head.appendChild(el);
+      }
+      el.innerText = titleToSet;
     }
   }, [data?.hero?.siteTitle]);
 

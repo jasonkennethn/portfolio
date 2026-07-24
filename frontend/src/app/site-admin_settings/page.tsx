@@ -205,6 +205,18 @@ export default function AdminSettingsPage() {
     };
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    if (typeof document !== 'undefined' && formData?.hero?.siteTitle) {
+      document.title = formData.hero.siteTitle;
+      let el = document.querySelector('title');
+      if (!el) {
+        el = document.createElement('title');
+        document.head.appendChild(el);
+      }
+      el.innerText = formData.hero.siteTitle;
+    }
+  }, [formData?.hero?.siteTitle]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
