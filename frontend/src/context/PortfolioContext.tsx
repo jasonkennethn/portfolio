@@ -49,6 +49,7 @@ export interface SkillCategory {
 }
 
 export interface HeroData {
+  siteTitle?: string;
   name: string;
   role: string;
   bio: string;
@@ -72,6 +73,7 @@ export interface PortfolioData {
 
 const defaultPortfolioData: PortfolioData = {
   hero: {
+    siteTitle: 'Jason Kenneth N | Software Engineer Portfolio',
     name: 'Jason Kenneth N',
     role: 'Software Engineer',
     bio: "Software Engineer with experience building backend applications and database-driven solutions using Python, Django, Java, SQL, and PostgreSQL. Passionate about writing clean, maintainable, and scalable code.",

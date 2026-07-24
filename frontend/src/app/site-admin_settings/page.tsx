@@ -394,38 +394,13 @@ export default function AdminSettingsPage() {
               </div>
 
               <div className="admin-actions w-full sm:w-auto justify-end">
-                <a
-                  href="/"
-                  target="_blank"
-                  className="apple-button btn-secondary inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700"
-                >
-                  <Eye className="w-4 h-4" />
-                  <span className="hidden sm:inline">Preview</span>
-                </a>
-
-                <button
-                  onClick={handleReset}
-                  className="apple-button btn-secondary inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-amber-600"
-                  title="Reset to original defaults"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span className="hidden sm:inline">Reset</span>
-                </button>
-
-                <button
-                  onClick={handleSave}
-                  className="apple-button btn-primary inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Save</span>
-                </button>
-
                 <button
                   onClick={handleLogout}
-                  className="p-2.5 rounded-xl border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-400 transition-all cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 text-slate-500 transition-all cursor-pointer inline-flex items-center gap-2 text-xs font-bold"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
                 </button>
               </div>
             </div>
@@ -450,6 +425,17 @@ export default function AdminSettingsPage() {
                 <div className="admin-section-title">
                   <div className="icon-circle"><User className="w-4 h-4" /></div>
                   <span>Hero Section & Profile Information</span>
+                </div>
+
+                <div>
+                  <label className="admin-label">Website Title (Browser Tab HTML Title)</label>
+                  <input
+                    type="text"
+                    value={formData.hero.siteTitle || ''}
+                    onChange={(e) => setFormData({ ...formData, hero: { ...formData.hero, siteTitle: e.target.value } })}
+                    placeholder="e.g. Jason Kenneth N | Software Engineer Portfolio"
+                    className="admin-input font-medium"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -1242,6 +1228,20 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
             )}
+            {/* Save Action Card at Bottom */}
+            <div className="admin-content-card p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2 border-[var(--primary)]/20 shadow-lg">
+              <div className="text-center sm:text-left">
+                <h4 className="text-sm font-extrabold text-slate-900">Save Your Customizations</h4>
+                <p className="text-xs text-slate-500 mt-0.5">Persists all section edits live to database & Cloudinary CDN</p>
+              </div>
+              <button
+                onClick={handleSave}
+                className="apple-button btn-primary inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-xl transition-all cursor-pointer w-full sm:w-auto"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save All Changes</span>
+              </button>
+            </div>
 
             {/* Footer Link */}
             <div className="text-center py-4">

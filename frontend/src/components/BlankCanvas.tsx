@@ -45,6 +45,12 @@ export function BlankCanvas() {
   const { data } = usePortfolio();
   const { hero, projects, experiences, education, certifications, achievements, skillCategories } = data;
 
+  React.useEffect(() => {
+    if (hero?.siteTitle) {
+      document.title = hero.siteTitle;
+    }
+  }, [hero?.siteTitle]);
+
   const [contactForm, setContactForm] = React.useState({ name: '', email: '', subject: '', message: '' });
   const [isSending, setIsSending] = React.useState(false);
   const [sendSuccess, setSendSuccess] = React.useState('');
