@@ -50,14 +50,20 @@ def admin_login(request):
     username = request.data.get('username')
     password = request.data.get('password')
 
-    env_username = os.getenv('ADMIN_USERNAME', 'admin')
-    env_password = os.getenv('ADMIN_PASSWORD', 'admin')
+    env_username = os.getenv('ADMIN_USERNAME')
+    env_password = os.getenv('ADMIN_PASSWORD')
 
-    # 1. Validate against environment variables (.env)
+    if not env_username or not env_password:
+        return Response({
+            "success": False,
+            "error": "Superadmin environment credentials not set."
+        }, status=500)
+
+    # Validate strictly against environment variables (.env) ONLY - NO DB FALLBACK
     if username == env_username and password == env_password:
         return Response({
             "success": True,
-            "message": "Superadmin authentication successful via environment variables",
+            "message": "Superadmin authentication successful",
             "user": {
                 "username": env_username,
                 "email": f"{env_username}@portfolio.com",
@@ -65,23 +71,10 @@ def admin_login(request):
             }
         })
 
-    # 2. Fallback to Django DB superuser if created
-    user = authenticate(request, username=username, password=password)
-    if user is not None and user.is_staff:
-        return Response({
-            "success": True,
-            "message": "Authentication successful",
-            "user": {
-                "username": user.username,
-                "email": user.email,
-                "is_superuser": user.is_superuser
-            }
-        })
-    else:
-        return Response({
-            "success": False,
-            "error": "Invalid superadmin credentials"
-        }, status=401)
+    return Response({
+        "success": False,
+        "error": "Invalid superadmin credentials"
+    }, status=401)
 
 
 @api_view(['GET', 'POST'])
