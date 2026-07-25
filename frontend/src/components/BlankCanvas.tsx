@@ -58,7 +58,7 @@ export function BlankCanvas() {
     }
   }, [hero?.siteTitle]);
 
-  const [contactForm, setContactForm] = React.useState({ name: '', email: '', subject: '', message: '' });
+  const [contactForm, setContactForm] = React.useState({ name: '', email: '', message: '' });
   const [isSending, setIsSending] = React.useState(false);
   const [sendSuccess, setSendSuccess] = React.useState('');
   const [sendError, setSendError] = React.useState('');
@@ -79,7 +79,7 @@ export function BlankCanvas() {
       const result = await res.json();
       if (res.ok && result.success) {
         setSendSuccess('Message sent successfully! Thank you for reaching out.');
-        setContactForm({ name: '', email: '', subject: '', message: '' });
+        setContactForm({ name: '', email: '', message: '' });
       } else {
         setSendError(result.error || 'Failed to send message.');
       }
@@ -600,18 +600,6 @@ export function BlankCanvas() {
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                       required
-                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 text-sm font-medium"
-                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)' }}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-muted)', display: 'block', marginBottom: '6px' }}>Subject</label>
-                    <input 
-                      type="text" 
-                      placeholder="Project Inquiry, Collaboration, etc."
-                      value={contactForm.subject}
-                      onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 text-sm font-medium"
                       style={{ borderColor: 'var(--card-border)', background: 'var(--background)' }}
                     />

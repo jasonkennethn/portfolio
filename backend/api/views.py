@@ -213,56 +213,148 @@ def download_resume(request):
     else:
         return Response({"error": "Resume file not found"}, status=404)
 
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import escape
 
 @api_view(['POST'])
 def send_contact_email(request):
     name = request.data.get('name', '').strip()
     sender_email = request.data.get('email', '').strip()
-    subject = request.data.get('subject', '').strip()
     message = request.data.get('message', '').strip()
 
     if not name or not sender_email or not message:
         return Response({"success": False, "error": "Name, email, and message are required fields."}, status=400)
 
+    # Required default subject format: "<Full Name> From Portfolio"
+    email_subject = f"{name} From Portfolio"
+
     # 1. Save message to PostgreSQL Database immediately so it's never lost
     msg_obj = ContactMessage.objects.create(
         name=name,
         email=sender_email,
-        subject=subject,
+        subject=email_subject,
         message=message,
         status='pending'
     )
 
-    # Construct Email
-    email_subject = f"Portfolio Contact: {subject}" if subject else f"Portfolio Message from {name}"
-    email_body = f"""Name: {name}
+    # Plain text version for email client fallback
+    plain_text_body = f"""New Message From Portfolio Contact Form:
+
+Name: {name}
 Email: {sender_email}
-Subject: {subject or 'N/A'}
 
 Message:
-{message}"""
+{message}
+"""
+
+    # HTML formatted version for rich, executive email layout
+    safe_name = escape(name)
+    safe_email = escape(sender_email)
+    safe_message = escape(message).replace('\n', '<br>')
+
+    html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{safe_name} From Portfolio</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 580px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01); border: 1px solid #e2e8f0;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #3730a3 0%, #494bd6 50%, #6366f1 100%); padding: 32px 32px 28px 32px; text-align: left;">
+              <div style="display: inline-block; padding: 4px 12px; background-color: rgba(255, 255, 255, 0.2); border-radius: 9999px; color: #ffffff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;">
+                New Portfolio Message
+              </div>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;">
+                {safe_name}
+              </h1>
+              <p style="margin: 6px 0 0 0; color: #e0e7ff; font-size: 14px; font-weight: 500;">
+                <a href="mailto:{safe_email}" style="color: #ffffff; text-decoration: underline;">{safe_email}</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 32px;">
+              
+              <!-- Sender Details Grid -->
+              <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; padding: 16px 20px; border: 1px solid #f1f5f9; margin-bottom: 24px;">
+                <tr>
+                  <td>
+                    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="padding-bottom: 8px;">
+                          <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Sender Name</span>
+                          <span style="font-size: 14px; font-weight: 700; color: #0f172a;">{safe_name}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Email Address</span>
+                          <a href="mailto:{safe_email}" style="font-size: 14px; font-weight: 600; color: #494bd6; text-decoration: none;">{safe_email}</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Message Text -->
+              <div style="margin-bottom: 8px;">
+                <span style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Message Body</span>
+              </div>
+              <div style="background-color: #ffffff; border-left: 4px solid #494bd6; padding: 18px 20px; border-radius: 0 12px 12px 0; border-top: 1px solid #f1f5f9; border-right: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;">
+                <p style="margin: 0; font-size: 15px; line-height: 1.65; color: #334155; font-weight: 400;">
+                  {safe_message}
+                </p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; padding: 20px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #64748b; font-weight: 500;">
+                Reply directly to this email to respond to <strong>{safe_name}</strong>.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
 
     from_email = getattr(settings, 'EMAIL_HOST_USER', 'celarox.mail@gmail.com') or 'celarox.mail@gmail.com'
 
     smtp_success = False
-    smtp_error_msg = ""
-
     try:
-        email = EmailMessage(
+        email = EmailMultiAlternatives(
             subject=email_subject,
-            body=email_body,
+            body=plain_text_body,
             from_email=from_email,
             to=["jasonkennethn@gmail.com"],
             reply_to=[sender_email]
         )
+        email.attach_alternative(html_content, "text/html")
         email.send(fail_silently=False)
         smtp_success = True
         msg_obj.status = 'sent'
         msg_obj.save()
     except Exception as e:
-        smtp_error_msg = str(e)
-        print(f"[SMTP Error] {smtp_error_msg}")
+        print(f"[SMTP Error] {e}")
         msg_obj.status = 'failed'
         msg_obj.save()
 
