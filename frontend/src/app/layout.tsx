@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Lora, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -20,9 +20,25 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+};
+
 export const metadata: Metadata = {
   title: "Jason Kenneth N — Backend Developer & Software Engineer Portfolio",
   description: "Computer Science undergraduate with 9 months software development internship experience in Python, Django, SQL, PostgreSQL, AWS, and OCI.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Jason Kenneth N',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 import { PortfolioProvider } from "@/context/PortfolioContext";

@@ -134,40 +134,40 @@ export function BlankCanvas() {
   return (
     <div id="scroll-container" className="h-full w-full flex-1 overflow-y-auto overflow-x-hidden scroll-smooth bg-executive-mesh relative select-text">
 
-      <div className="max-w-7xl mx-auto w-full relative z-10 px-4 sm:px-10 lg:px-16">
+      <div className="max-w-7xl mx-auto w-full relative z-10 px-4 sm:px-8 lg:px-16">
         
         {/* ==========================================
             SECTION 1: HERO (#about)
             ========================================== */}
-        <section id="about" className="min-h-screen flex items-center justify-center pt-32 pb-20 lg:py-0">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 w-full max-w-6xl">
+        <section id="about" className="min-h-[100dvh] flex items-center justify-center pt-24 sm:pt-32 pb-16 sm:pb-20 lg:py-0 scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-12 lg:gap-16 w-full max-w-6xl">
             
             {/* Left side text column */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 flex-1 max-w-2xl order-2 lg:order-1 translate-y-3 lg:translate-y-4">
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-5 sm:space-y-6 flex-1 max-w-2xl order-2 lg:order-1 translate-y-3 lg:translate-y-4">
               
               {/* Header Text Group */}
-              <div className="flex flex-col items-center lg:items-start space-y-3 w-full">
-                <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, fontSize: 'clamp(32px, 5.5vw, 64px)', color: 'var(--foreground)', letterSpacing: '-0.02em', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
+              <div className="flex flex-col items-center lg:items-start space-y-2 sm:space-y-3 w-full">
+                <h1 style={{ fontFamily: 'var(--font-sans)', fontWeight: 800, fontSize: 'clamp(28px, 8vw, 64px)', color: 'var(--foreground)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                   {hero.name}
                 </h1>
 
                 <p 
                   className="bg-gradient-to-r from-[var(--primary)] via-indigo-600 to-violet-600 bg-clip-text text-transparent font-extrabold"
-                  style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(20px, 2.6vw, 30px)', letterSpacing: '0.03em' }}
+                  style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(18px, 4vw, 30px)', letterSpacing: '0.03em' }}
                 >
                   {hero.role}
                 </p>
 
-                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'clamp(15px, 1.5vw, 18px)', color: 'var(--foreground-muted)', lineHeight: 1.8, maxWidth: '720px' }}>
+                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'clamp(14px, 3.5vw, 18px)', color: 'var(--foreground-muted)', lineHeight: 1.8, maxWidth: '720px' }}>
                   {hero.bio}
                 </p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1 w-full max-w-[340px] sm:max-w-none justify-center lg:justify-start px-4 sm:px-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 w-full max-w-[340px] sm:max-w-none justify-center lg:justify-start">
                 <a 
                   href="#projects"
-                  className="apple-button btn-primary inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-base"
+                  className="apple-button btn-primary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 rounded-xl text-white font-semibold text-[15px] sm:text-base min-h-[48px]"
                 >
                   <span>View Projects</span>
                   <ArrowRight className="w-4 h-4" />
@@ -177,7 +177,7 @@ export function BlankCanvas() {
                   href={hero.resumeUrl || '#'}
                   target="_blank"
                   rel="noreferrer"
-                  className="apple-button btn-secondary inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-base text-center cursor-pointer"
+                  className="apple-button btn-secondary inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 rounded-xl font-semibold text-[15px] sm:text-base text-center cursor-pointer min-h-[48px]"
                 >
                   <span>Resume</span>
                   <Download className="w-4 h-4" />
@@ -185,25 +185,25 @@ export function BlankCanvas() {
               </div>
 
               {/* Short Stats */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 sm:gap-3 pt-2 w-full">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all min-w-0">
                   <span className="font-extrabold text-base sm:text-lg text-[var(--primary)]">{totalExperienceMonths}+</span>
-                  <span className="font-semibold text-xs sm:text-sm text-slate-700">Months Experience</span>
+                  <span className="font-semibold text-xs sm:text-sm text-slate-700 whitespace-nowrap">Months Exp</span>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all min-w-0">
                   <span className="font-extrabold text-base sm:text-lg text-[var(--primary)]">{totalProjectsCount}+</span>
-                  <span className="font-semibold text-xs sm:text-sm text-slate-700">Projects</span>
+                  <span className="font-semibold text-xs sm:text-sm text-slate-700 whitespace-nowrap">Projects</span>
                 </div>
 
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-white/80 border border-slate-200 shadow-xs hover:border-[var(--primary)] transition-all min-w-0">
                   <span className="font-extrabold text-base sm:text-lg text-[var(--primary)]">{totalCertificationsCount}</span>
-                  <span className="font-semibold text-xs sm:text-sm text-slate-700">Certifications</span>
+                  <span className="font-semibold text-xs sm:text-sm text-slate-700 whitespace-nowrap">Certs</span>
                 </div>
               </div>
 
               {/* Social Icons */}
-              <div className="flex items-center gap-5 pt-1 justify-center lg:justify-start">
+              <div className="flex items-center gap-4 sm:gap-5 pt-1 justify-center lg:justify-start">
                 <a href={hero.github} target="_blank" rel="noreferrer"
                   className="social-icon-btn"
                   title="GitHub">
@@ -233,8 +233,8 @@ export function BlankCanvas() {
               {/* Outer decorative glowing background ring */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[var(--primary)] to-[var(--secondary)] opacity-10 blur-xl group-hover:opacity-20 transition-opacity duration-500" />
               
-              {/* Circular border wrapper */}
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full p-1.5 bg-[var(--primary)] shadow-xl shadow-[#494bd6]/5 group-hover:shadow-2xl group-hover:shadow-[#494bd6]/15 hover:scale-[1.03] transition-all duration-500 ease-out will-change-transform">
+              {/* Circular border wrapper — scales smoothly for all mobile sizes */}
+              <div className="relative w-48 h-48 sm:w-72 sm:h-72 lg:w-96 lg:h-96 rounded-full p-1.5 bg-[var(--primary)] shadow-xl shadow-[#494bd6]/5 group-hover:shadow-2xl group-hover:shadow-[#494bd6]/15 hover:scale-[1.03] transition-all duration-500 ease-out will-change-transform">
                 <div className="w-full h-full rounded-full overflow-hidden border-4 border-white bg-indigo-50/70 flex items-center justify-center relative">
                   {hero.photoUrl ? (
                     <img 
@@ -248,8 +248,8 @@ export function BlankCanvas() {
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-[var(--primary)] space-y-1">
-                      <User className="w-20 h-20 sm:w-24 sm:h-24 opacity-80" />
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Profile Photo</span>
+                      <User className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 opacity-80" />
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500">Profile Photo</span>
                     </div>
                   )}
                 </div>
@@ -262,34 +262,34 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 2: EXPERIENCE (#experience)
             ========================================== */}
-        <section id="experience" className="scroll-mt-28 py-20">
-          <h2 className="section-title mb-10">Experience</h2>
+        <section id="experience" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-20">
+          <h2 className="section-title mb-8 sm:mb-10">Experience</h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {experiences.map((exp, idx) => (
               <div key={idx} className="experience-card">
                 {/* Header Row */}
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                   <div>
-                    <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(17px, 1.8vw, 21px)', color: 'var(--foreground)' }}>
+                    <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(16px, 4vw, 21px)', color: 'var(--foreground)' }}>
                       {exp.role}
                     </h3>
                     <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '14px', color: 'var(--primary)' }}>
                       {exp.company}
                     </p>
                   </div>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 500, color: 'var(--foreground-muted)', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 500, color: 'var(--foreground-muted)', whiteSpace: 'nowrap' }}>
                     {exp.period}
                   </span>
                 </div>
 
                 {/* Summary */}
-                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.65, marginBottom: '16px' }}>
+                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.65, marginBottom: '14px' }}>
                   {exp.summary}
                 </p>
 
                 {/* Bullet Points */}
-                <ul className="space-y-2 mb-5">
+                <ul className="space-y-2 mb-4 sm:mb-5">
                   {exp.bullets.map((b, bIdx) => (
                     <li key={bIdx} className="flex items-start gap-2.5" style={{ fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.6 }}>
                       <span style={{ color: 'var(--primary)', fontSize: '8px', marginTop: '7px', flexShrink: 0 }}>●</span>
@@ -299,7 +299,7 @@ export function BlankCanvas() {
                 </ul>
 
                 {/* Tech Tags */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {exp.tech.map((t, tIdx) => (
                     <span key={tIdx} className="tech-pill">{t}</span>
                   ))}
@@ -312,10 +312,10 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 3: KEY PROJECTS (#projects)
             ========================================== */}
-        <section id="projects" className="scroll-mt-28 py-20">
-          <h2 className="section-title mb-10">Projects</h2>
+        <section id="projects" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-20">
+          <h2 className="section-title mb-8 sm:mb-10">Projects</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {projects.map((proj, idx) => (
               <div key={idx} className="project-card">
                 {/* Project Image Header */}
@@ -328,16 +328,16 @@ export function BlankCanvas() {
                 </div>
 
                 <div className="project-card-body">
-                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(18px, 2vw, 22px)', color: 'var(--foreground)', marginBottom: '8px' }}>
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(16px, 4vw, 22px)', color: 'var(--foreground)', marginBottom: '8px' }}>
                     {proj.title}
                   </h3>
 
-                  <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.6, marginBottom: '16px', flex: 1 }}>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.6, marginBottom: '14px', flex: 1 }}>
                     {proj.desc}
                   </p>
 
                   {/* Tech Tags */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
                     {proj.tech.map((t, tIdx) => (
                       <span key={tIdx} className="tech-pill">{t}</span>
                     ))}
@@ -350,7 +350,7 @@ export function BlankCanvas() {
                       href={proj.github} 
                       target="_blank" 
                       rel="noreferrer" 
-                      className="apple-button btn-secondary inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs shadow-xs"
+                      className="apple-button btn-secondary inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl font-bold text-xs shadow-xs min-h-[40px]"
                     >
                       <BsGithub className="w-4 h-4 text-slate-800" />
                       <span>GitHub</span>
@@ -361,7 +361,7 @@ export function BlankCanvas() {
                       href={proj.live} 
                       target="_blank" 
                       rel="noreferrer" 
-                      className="apple-button btn-primary inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-white font-bold text-xs shadow-xs"
+                      className="apple-button btn-primary inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-white font-bold text-xs shadow-xs min-h-[40px]"
                     >
                       <span>Live</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -376,21 +376,21 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 4: SKILLS (#skills)
             ========================================== */}
-        <section id="skills" className="scroll-mt-28 py-20">
-          <h2 className="section-title mb-10">Skills</h2>
+        <section id="skills" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-20">
+          <h2 className="section-title mb-8 sm:mb-10">Skills</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {skillCategories.map((cat, idx) => (
-              <div key={idx} className="glass-panel p-6 flex flex-col space-y-4">
+              <div key={idx} className="glass-panel p-5 sm:p-6 flex flex-col space-y-3 sm:space-y-4">
                 <div className="flex items-center gap-3 border-b pb-3" style={{ borderColor: 'var(--card-border)' }}>
                   <div className="w-9 h-9 rounded-full flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0" style={{ color: 'var(--primary)' }}>
                     {getSkillIcon(cat.title)}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '17px', color: 'var(--foreground)' }}>
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(15px, 3.5vw, 17px)', color: 'var(--foreground)' }}>
                     {cat.title}
                   </h3>
                 </div>
-                <div className="flex flex-wrap gap-2 pt-1">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
                   {cat.skills.map((skill, sIdx) => (
                     <span key={sIdx} className="tech-pill">{skill}</span>
                   ))}
@@ -403,37 +403,37 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 5: EDUCATION (#education)
             ========================================== */}
-        <section id="education" className="scroll-mt-28 py-24 sm:py-32 pt-16 sm:pt-24">
-          <h2 className="section-title mb-14">Education</h2>
+        <section id="education" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-24 lg:py-32">
+          <h2 className="section-title mb-10 sm:mb-14">Education</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 sm:mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-2 sm:mt-6">
             {education.map((edu, edIdx) => (
-              <div key={edIdx} className="education-card p-8 sm:p-10 flex flex-col justify-between space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0" style={{ color: 'var(--primary)' }}>
-                      <GraduationCap className="w-6 h-6" />
+              <div key={edIdx} className="education-card p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-4 sm:space-y-6">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0" style={{ color: 'var(--primary)' }}>
+                      <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
-                    <div>
-                      <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(18px, 2vw, 22px)', color: 'var(--foreground)' }}>
+                    <div className="min-w-0">
+                      <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(16px, 4vw, 22px)', color: 'var(--foreground)' }}>
                         {edu.degree}
                       </h3>
-                      <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '15px', color: 'var(--primary)' }}>
+                      <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '14px', color: 'var(--primary)' }}>
                         {edu.field}
                       </p>
                     </div>
                   </div>
 
-                  <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '15px', color: 'var(--foreground-muted)' }}>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 500, fontSize: '14px', color: 'var(--foreground-muted)' }}>
                     {edu.institution}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--card-border)' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--foreground-muted)' }}>
+                <div className="flex items-center justify-between pt-3 sm:pt-4 border-t" style={{ borderColor: 'var(--card-border)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--foreground-muted)' }}>
                     {edu.period}
                   </span>
-                  <span className="tech-pill" style={{ fontWeight: 700, color: 'var(--primary)', borderColor: 'var(--primary)', padding: '6px 16px', fontSize: '13px' }}>
+                  <span className="tech-pill" style={{ fontWeight: 700, color: 'var(--primary)', borderColor: 'var(--primary)', padding: '5px 14px', fontSize: '12px' }}>
                     {edu.score}
                   </span>
                 </div>
@@ -445,10 +445,10 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 6: CERTIFICATIONS (#certifications)
             ========================================== */}
-        <section id="certifications" className="scroll-mt-28 py-24 sm:py-32">
-          <h2 className="section-title mb-12">Certifications</h2>
+        <section id="certifications" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-24 lg:py-32">
+          <h2 className="section-title mb-8 sm:mb-12">Certifications</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {certifications.map((cert, idx) => (
               <div key={idx} className="cert-card">
                 {/* Certification Image */}
@@ -465,8 +465,8 @@ export function BlankCanvas() {
                   )}
                 </div>
 
-                <div className="px-5 pb-5 text-center">
-                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '15px', color: 'var(--foreground)', marginBottom: '4px' }}>
+                <div className="px-4 sm:px-5 pb-4 sm:pb-5 text-center">
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '14px', color: 'var(--foreground)', marginBottom: '4px' }}>
                     {cert.title}
                   </h3>
                   <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--foreground-muted)' }}>
@@ -481,25 +481,25 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 7: ACHIEVEMENTS (#achievements)
             ========================================== */}
-        <section id="achievements" className="scroll-mt-28 py-24 sm:py-32 animate-fade-in-up">
-          <h2 className="section-title mb-12">Achievements</h2>
+        <section id="achievements" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-24 lg:py-32 animate-fade-in-up">
+          <h2 className="section-title mb-8 sm:mb-12">Achievements</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {achievements.map((ach, idx) => (
-              <div key={idx} className="glass-panel p-8 sm:p-10 flex flex-col justify-between space-y-6 hover:border-[var(--primary)] transition-all min-h-[260px]">
-                <div className="space-y-4">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0" style={{ color: 'var(--primary)' }}>
+              <div key={idx} className="glass-panel p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-4 sm:space-y-6 hover:border-[var(--primary)] transition-all min-h-0 sm:min-h-[260px]">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0" style={{ color: 'var(--primary)' }}>
                     {getAchievementIcon(ach.icon || 'Trophy')}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '18px', color: 'var(--foreground)' }}>
+                  <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(16px, 4vw, 18px)', color: 'var(--foreground)' }}>
                     {ach.title}
                   </h3>
                   <p style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.65 }}>
                     {ach.desc}
                   </p>
                 </div>
-                <div className="border-t pt-4" style={{ borderColor: 'var(--card-border)' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--primary)' }}>
+                <div className="border-t pt-3 sm:pt-4" style={{ borderColor: 'var(--card-border)' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--primary)' }}>
                     {ach.location}
                   </span>
                 </div>
@@ -511,58 +511,58 @@ export function BlankCanvas() {
         {/* ==========================================
             SECTION 8: CONTACT (#contact)
             ========================================== */}
-        <section id="contact" className="scroll-mt-28 py-20">
-          <h2 className="section-title mb-10">Let&apos;s Connect</h2>
+        <section id="contact" className="scroll-mt-16 sm:scroll-mt-20 lg:scroll-mt-28 py-14 sm:py-20 pb-20 sm:pb-24">
+          <h2 className="section-title mb-8 sm:mb-10">Let&apos;s Connect</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             
             {/* Contact Details Card */}
-            <div className="glass-panel p-8 sm:p-10 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
+            <div className="glass-panel p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-5 sm:space-y-6">
+              <div className="space-y-3 sm:space-y-4">
                 <span className="tech-pill" style={{ color: 'var(--primary)', borderColor: 'var(--primary)', fontWeight: 600 }}>
                   Open to Opportunities
                 </span>
                 
-                <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(20px, 2.2vw, 26px)', color: 'var(--foreground)', lineHeight: 1.2 }}>
+                <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(18px, 4.5vw, 26px)', color: 'var(--foreground)', lineHeight: 1.2 }}>
                   Looking for a Software Engineer?
                 </h3>
                 
-                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '15px', color: 'var(--foreground-muted)', lineHeight: 1.7 }}>
+                <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', color: 'var(--foreground-muted)', lineHeight: 1.7 }}>
                   I am currently seeking full-time developer roles where I can apply my 9 months of software development experience in Python, Django REST, SQL, and database optimization. Whether you have an open role, a SaaS project, or just want to talk tech — my inbox is always open.
                 </p>
               </div>
 
-              <div className="space-y-4 border-t pt-6" style={{ borderColor: 'var(--card-border)' }}>
-                <div className="flex items-center gap-3">
+              <div className="space-y-3 sm:space-y-4 border-t pt-5 sm:pt-6" style={{ borderColor: 'var(--card-border)' }}>
+                <a href="mailto:jasonkennethn@gmail.com" className="flex items-center gap-3 p-2 -m-2 rounded-xl active:bg-slate-50 transition-colors">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0">
                     <Mail className="w-5 h-5" style={{ color: 'var(--primary)' }} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email Me Directly</p>
-                    <a href="mailto:jasonkennethn@gmail.com" style={{ fontSize: '15px', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none' }}>
+                    <p className="truncate" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--primary)' }}>
                       jasonkennethn@gmail.com
-                    </a>
+                    </p>
                   </div>
-                </div>
+                </a>
 
-                <div className="flex items-center gap-3">
+                <a href="tel:+916361975397" className="flex items-center gap-3 p-2 -m-2 rounded-xl active:bg-slate-50 transition-colors">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-50 border border-indigo-100 shrink-0">
                     <Phone className="w-5 h-5" style={{ color: 'var(--primary)' }} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--foreground-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Phone</p>
-                    <a href="tel:+916361975397" style={{ fontSize: '15px', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none' }}>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--primary)' }}>
                       +91 6361975397
-                    </a>
+                    </p>
                   </div>
-                </div>
+                </a>
               </div>
             </div>
 
             {/* Contact Form Card */}
-            <form onSubmit={handleContactSubmit} className="glass-panel p-8 sm:p-10 flex flex-col justify-between space-y-6">
+            <form onSubmit={handleContactSubmit} className="glass-panel p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-5 sm:space-y-6">
               <div className="space-y-4">
-                <h4 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '18px', color: 'var(--foreground)' }}>
+                <h4 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '17px', color: 'var(--foreground)' }}>
                   Send a Direct Message
                 </h4>
                 
@@ -587,8 +587,8 @@ export function BlankCanvas() {
                       value={contactForm.name}
                       onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                       required
-                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 text-sm font-medium"
-                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)' }}
+                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 font-medium min-h-[48px]"
+                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)', fontSize: '16px' }}
                     />
                   </div>
 
@@ -600,8 +600,8 @@ export function BlankCanvas() {
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                       required
-                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 text-sm font-medium"
-                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)' }}
+                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 font-medium min-h-[48px]"
+                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)', fontSize: '16px' }}
                     />
                   </div>
 
@@ -613,8 +613,8 @@ export function BlankCanvas() {
                       value={contactForm.message}
                       onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                       required
-                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 resize-none text-sm font-medium"
-                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)' }}
+                      className="w-full px-4 py-3 rounded-xl border outline-none transition-all duration-300 focus:border-[var(--primary)] focus:ring-4 focus:ring-[#494bd6]/10 resize-none font-medium"
+                      style={{ borderColor: 'var(--card-border)', background: 'var(--background)', fontSize: '16px' }}
                     />
                   </div>
                 </div>
@@ -623,7 +623,7 @@ export function BlankCanvas() {
               <button 
                 type="submit"
                 disabled={isSending}
-                className="apple-button btn-primary w-full py-3.5 rounded-xl font-semibold text-center cursor-pointer disabled:opacity-50"
+                className="apple-button btn-primary w-full py-3.5 rounded-xl font-semibold text-center cursor-pointer disabled:opacity-50 min-h-[50px] text-[15px]"
               >
                 {isSending ? 'Sending Message...' : 'Send Message'}
               </button>

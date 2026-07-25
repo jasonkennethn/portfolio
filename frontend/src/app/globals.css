@@ -623,3 +623,289 @@ body:has(.admin-cms-root) {
     display: none;
   }
 }
+
+/* ========================================
+   MOBILE-FIRST PORTFOLIO STYLES
+   "Built Dedicatedly for Mobile" UX
+   ======================================== */
+
+/* Global mobile touch optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Safe area support for notched devices */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Smooth momentum scrolling for iOS */
+#scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* ── Touch Device: Disable hover lift/float ── */
+@media (hover: none) and (pointer: coarse) {
+  .glass-panel:hover,
+  .project-card:hover,
+  .experience-card:hover,
+  .education-card:hover,
+  .cert-card:hover {
+    transform: none !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  .glass-panel:hover {
+    border-color: var(--card-border);
+  }
+
+  .project-card:hover,
+  .experience-card:hover,
+  .education-card:hover,
+  .cert-card:hover {
+    border-color: var(--card-border);
+  }
+
+  /* Replace hover lift with active press for tactile feel */
+  .glass-panel:active,
+  .project-card:active,
+  .experience-card:active,
+  .education-card:active,
+  .cert-card:active {
+    transform: scale(0.98) !important;
+    transition-duration: 0.1s !important;
+  }
+
+  .apple-button:active,
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: scale(0.95) !important;
+    transition-duration: 0.1s !important;
+  }
+
+  .social-icon-btn:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm) !important;
+    border-color: var(--card-border) !important;
+    color: var(--foreground-muted) !important;
+    background-color: var(--card-bg) !important;
+  }
+
+  .social-icon-btn:active {
+    transform: scale(0.9) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+    transition-duration: 0.1s !important;
+  }
+
+  .tech-pill:hover {
+    border-color: var(--card-border);
+    color: var(--foreground);
+  }
+
+  .btn-primary:hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(73, 75, 214, 0.3) !important;
+  }
+
+  .btn-secondary:hover {
+    transform: none;
+    border-color: var(--card-border) !important;
+    color: var(--foreground) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  /* Disable cert image zoom on touch */
+  .cert-card:hover .cert-image-container img {
+    transform: none;
+  }
+
+  /* Disable will-change on touch for battery savings */
+  .project-card,
+  .experience-card,
+  .education-card,
+  .cert-card,
+  .apple-button,
+  .social-icon-btn,
+  .nav-link {
+    will-change: auto;
+  }
+}
+
+/* ── Mobile Navbar Drawer Animation ── */
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-nav-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-nav-drawer {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 20px 60px -12px rgba(15, 23, 42, 0.2), 0 8px 20px rgba(15, 23, 42, 0.08);
+  opacity: 0;
+  transform: translateY(-12px) scale(0.97);
+  pointer-events: none;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: calc(100dvh - 100px);
+  overflow-y: auto;
+}
+
+.mobile-nav-drawer.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.mobile-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #334155;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 48px;
+}
+
+.mobile-nav-link:active {
+  transform: scale(0.97);
+  background: rgba(241, 245, 249, 0.8);
+}
+
+.mobile-nav-link.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(73, 75, 214, 0.3);
+}
+
+.mobile-nav-link:not(.active):hover {
+  background: rgba(241, 245, 249, 0.6);
+}
+
+.mobile-resume-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 15px;
+  min-height: 50px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.mobile-resume-btn:active {
+  transform: scale(0.97);
+  background: var(--primary);
+}
+
+/* ── Scrollbar: Hide on mobile for native feel ── */
+@media (max-width: 1024px) {
+  #scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+  #scroll-container {
+    scrollbar-width: none;
+  }
+}
+
+/* ── Mobile Typography & Spacing ── */
+@media (max-width: 640px) {
+  .section-title {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+
+  /* Reduce card shadows on mobile for performance */
+  .glass-panel,
+  .project-card,
+  .experience-card,
+  .education-card,
+  .cert-card {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  /* Tighter card padding on mobile */
+  .experience-card,
+  .education-card {
+    padding: 20px !important;
+  }
+
+  .glass-panel {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .project-card {
+    border-radius: 20px;
+  }
+
+  .cert-card {
+    border-radius: 20px;
+  }
+
+  /* Social icons: slightly smaller for thumb zone */
+  .social-icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ── Very small screens (320px–374px) ── */
+@media (max-width: 374px) {
+  .section-title {
+    font-size: 22px;
+  }
+
+  .tech-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .experience-card,
+  .education-card {
+    padding: 16px !important;
+  }
+
+  .glass-panel {
+    padding: 16px;
+    border-radius: 18px;
+  }
+}
+
