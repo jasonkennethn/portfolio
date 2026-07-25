@@ -31,7 +31,8 @@ import {
   Globe,
   Medal,
   Heart,
-  Lightbulb
+  Lightbulb,
+  Mail
 } from 'lucide-react';
 import { usePortfolio, PortfolioData } from '@/context/PortfolioContext';
 import { getApiBaseUrl } from '@/config/api';
@@ -45,8 +46,55 @@ export default function AdminSettingsPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'hero' | 'projects' | 'experience' | 'skills' | 'education' | 'certifications' | 'achievements'>('hero');
+  const [activeTab, setActiveTab] = useState<'hero' | 'projects' | 'experience' | 'skills' | 'education' | 'certifications' | 'achievements' | 'messages'>('hero');
   const [uploadingTarget, setUploadingTarget] = useState<string | null>(null);
+
+  interface ContactMsg {
+    id: number;
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    status: string;
+    is_read: boolean;
+    created_at: string;
+  }
+
+  const [messages, setMessages] = useState<ContactMsg[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const fetchMessages = async () => {
+    setLoadingMessages(true);
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/`);
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessages(result.messages || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleDeleteMessage = async (id: number) => {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${id}/`, { method: 'DELETE' });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessages(prev => prev.filter(m => m.id !== id));
+      }
+    } catch (err) {
+      console.error('Failed to delete message:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && activeTab === 'messages') {
+      fetchMessages();
+    }
+  }, [isAuthenticated, activeTab]);
 
   // Form State initialized from global context
   const [formData, setFormData] = useState<PortfolioData>(globalData);
@@ -281,6 +329,7 @@ export default function AdminSettingsPage() {
     { key: 'education' as const, label: `Education (${formData.education.length})`, icon: GraduationCap },
     { key: 'certifications' as const, label: `Certifications (${formData.certifications.length})`, icon: Award },
     { key: 'achievements' as const, label: `Achievements (${formData.achievements.length})`, icon: Trophy },
+    { key: 'messages' as const, label: `Messages (${messages.length})`, icon: Mail },
   ];
 
   return (
@@ -1139,7 +1188,7 @@ export default function AdminSettingsPage() {
               </div>
             )}
 
-            {/* TAB 6: ACHIEVEMENTS */}
+            {/* TAB 7: ACHIEVEMENTS */}
             {activeTab === 'achievements' && (
               <div className="admin-content-card p-6 sm:p-8 space-y-6">
                 <div className="flex items-center justify-between">
@@ -1235,7 +1284,7 @@ export default function AdminSettingsPage() {
                             updated[aIdx].icon = e.target.value;
                             setFormData({ ...formData, achievements: updated });
                           }}
-                          className="admin-input cursor-pointer"
+                          className="admin-input cursor-pointer font-medium"
                         >
                           {achievementIconOptions.map((opt) => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -1245,6 +1294,70 @@ export default function AdminSettingsPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* TAB 8: MESSAGES */}
+            {activeTab === 'messages' && (
+              <div className="admin-content-card p-6 sm:p-8 space-y-6">
+                <div className="flex items-center justify-between">
+                  <div className="admin-section-title !mb-0 !pb-0 !border-0">
+                    <div className="icon-circle"><Mail className="w-4 h-4" /></div>
+                    <span>Received Contact Messages</span>
+                  </div>
+                  <button
+                    onClick={fetchMessages}
+                    className="apple-button btn-secondary inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer"
+                  >
+                    Refresh
+                  </button>
+                </div>
+
+                {loadingMessages ? (
+                  <div className="py-12 text-center text-xs font-medium text-slate-400">Loading messages...</div>
+                ) : messages.length === 0 ? (
+                  <div className="py-12 text-center text-xs font-medium text-slate-400 border border-dashed rounded-xl">
+                    No messages received yet.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((msg) => (
+                      <div key={msg.id} className="p-5 rounded-2xl border border-slate-200 bg-white/70 space-y-3 relative group">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                          <div>
+                            <span className="text-sm font-bold text-slate-900">{msg.name}</span>
+                            <span className="text-xs text-slate-500 ml-2">&lt;{msg.email}&gt;</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${msg.status === 'sent' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                              {msg.status}
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-400">
+                              {new Date(msg.created_at).toLocaleString()}
+                            </span>
+                            <button
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
+                              title="Delete Message"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {msg.subject && (
+                          <div className="text-xs font-semibold text-slate-800">
+                            Subject: <span className="font-normal text-slate-600">{msg.subject}</span>
+                          </div>
+                        )}
+
+                        <div className="text-xs font-medium text-slate-700 whitespace-pre-wrap leading-relaxed bg-slate-50/80 p-3.5 rounded-xl border border-slate-100">
+                          {msg.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {/* Save Action Card at Bottom */}

@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from django.db import connection
 from django.conf import settings
 import time
-from .models import PortfolioConfig
+from .models import PortfolioConfig, ContactMessage
 
 import re
 import os
@@ -213,45 +213,88 @@ def download_resume(request):
     else:
         return Response({"error": "Resume file not found"}, status=404)
 
-import threading
 from django.core.mail import EmailMessage
-
-def send_email_async(email):
-    try:
-        email.send(fail_silently=False)
-        print("[SMTP] Contact email dispatched successfully in background thread.")
-    except Exception as err:
-        print(f"[SMTP Error] Failed to send email in background thread: {err}")
 
 @api_view(['POST'])
 def send_contact_email(request):
     name = request.data.get('name', '').strip()
     sender_email = request.data.get('email', '').strip()
+    subject = request.data.get('subject', '').strip()
     message = request.data.get('message', '').strip()
 
     if not name or not sender_email or not message:
         return Response({"success": False, "error": "Name, email, and message are required fields."}, status=400)
 
-    email_subject = f"{name} from Portfolio"
+    # 1. Save message to PostgreSQL Database immediately so it's never lost
+    msg_obj = ContactMessage.objects.create(
+        name=name,
+        email=sender_email,
+        subject=subject,
+        message=message,
+        status='pending'
+    )
+
+    # Construct Email
+    email_subject = f"Portfolio Contact: {subject}" if subject else f"Portfolio Message from {name}"
+    email_body = f"""Name: {name}
+Email: {sender_email}
+Subject: {subject or 'N/A'}
+
+Message:
+{message}"""
+
+    from_email = getattr(settings, 'EMAIL_HOST_USER', 'celarox.mail@gmail.com') or 'celarox.mail@gmail.com'
+
+    smtp_success = False
+    smtp_error_msg = ""
 
     try:
-        email_body = f"""Name: {name}
-Email: {sender_email}
-Message: {message}"""
         email = EmailMessage(
             subject=email_subject,
             body=email_body,
-            from_email="celarox.mail@gmail.com",
+            from_email=from_email,
             to=["jasonkennethn@gmail.com"],
             reply_to=[sender_email]
         )
-        
-        # Launch background email thread so HTTP response is instant (<10ms)
-        threading.Thread(target=send_email_async, args=(email,)).start()
-
-        return Response({
-            "success": True,
-            "message": "Message sent successfully! Thank you for reaching out."
-        })
+        email.send(fail_silently=False)
+        smtp_success = True
+        msg_obj.status = 'sent'
+        msg_obj.save()
     except Exception as e:
-        return Response({"success": False, "error": f"Failed to process message: {str(e)}"}, status=500)
+        smtp_error_msg = str(e)
+        print(f"[SMTP Error] {smtp_error_msg}")
+        msg_obj.status = 'failed'
+        msg_obj.save()
+
+    return Response({
+        "success": True,
+        "message": "Message received! Thank you for reaching out.",
+        "smtp_sent": smtp_success,
+        "id": msg_obj.id
+    })
+
+
+@api_view(['GET'])
+def get_contact_messages(request):
+    try:
+        messages = ContactMessage.objects.all().values('id', 'name', 'email', 'subject', 'message', 'status', 'is_read', 'created_at')
+        data = list(messages)
+        for item in data:
+            if item.get('created_at'):
+                item['created_at'] = item['created_at'].isoformat()
+        return Response({"success": True, "messages": data})
+    except Exception as e:
+        return Response({"success": False, "error": str(e)}, status=500)
+
+
+@api_view(['DELETE', 'POST'])
+def delete_contact_message(request, pk):
+    try:
+        msg = ContactMessage.objects.get(pk=pk)
+        msg.delete()
+        return Response({"success": True, "message": f"Message #{pk} deleted."})
+    except ContactMessage.DoesNotExist:
+        return Response({"success": False, "error": "Message not found"}, status=404)
+    except Exception as e:
+        return Response({"success": False, "error": str(e)}, status=500)
+
