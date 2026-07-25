@@ -16,7 +16,6 @@ import {
   Download,
   ExternalLink,
   User,
-  Printer,
   Heart,
   Lightbulb,
   Target,

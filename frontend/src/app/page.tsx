@@ -7,7 +7,7 @@ import { BlankCanvas } from '@/components/BlankCanvas';
 
 export default function Home() {
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col justify-between bg-executive-mesh text-[#020617] fixed inset-0">
+    <div className="h-dvh w-full overflow-hidden flex flex-col justify-between bg-executive-mesh text-[#020617] fixed inset-0">
       {/* Top Floating Navbar */}
       <Navbar />
 

@@ -73,7 +73,19 @@ body {
     radial-gradient(at 50% 60%, rgba(241, 245, 249, 0.9) 0px, transparent 65%),
     radial-gradient(at 20% 85%, rgba(73, 75, 214, 0.05) 0px, transparent 50%),
     radial-gradient(at 80% 90%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
-  background-attachment: fixed;
+}
+
+/* Fixed background only on desktop — causes scroll jank on iOS/mobile */
+@media (hover: hover) and (pointer: fine) {
+  .bg-executive-mesh {
+    background-attachment: fixed;
+  }
+}
+
+/* Custom selection color for brand feel */
+::selection {
+  background: rgba(73, 75, 214, 0.15);
+  color: var(--foreground);
 }
 
 /* Glass Card */
@@ -240,11 +252,23 @@ body {
   color: var(--foreground);
   background: transparent;
   transition: all var(--transition-fast);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tech-pill:hover {
   border-color: var(--primary);
   color: var(--primary);
+}
+
+/* Focus-visible for keyboard accessibility */
+.apple-button:focus-visible,
+.social-icon-btn:focus-visible,
+.mobile-nav-link:focus-visible,
+.admin-input:focus-visible,
+.admin-tab:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 /* Tactile Buttons */
@@ -836,7 +860,7 @@ body {
   background: var(--primary);
 }
 
-/* ── Scrollbar: Hide on mobile for native feel ── */
+/* ── Scrollbar: Hide on mobile/tablet for native feel ── */
 @media (max-width: 1024px) {
   #scroll-container::-webkit-scrollbar {
     display: none;
@@ -846,13 +870,40 @@ body {
   }
 }
 
+/* ── Tablet Polish (768px–1024px) ── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .project-card-body {
+    padding: 5%;
+  }
+
+  .cert-image-container {
+    aspect-ratio: 16/10;
+  }
+
+  /* Admin inputs need proper touch targets on tablet too */
+  .admin-input {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 48px;
+  }
+
+  .admin-tab {
+    min-height: 44px;
+  }
+
+  .admin-delete-btn {
+    padding: 8px 14px;
+    min-height: 40px;
+  }
+}
+
 /* ── Mobile Typography & Spacing ── */
 @media (max-width: 640px) {
   .section-title {
     font-size: clamp(24px, 6vw, 32px);
   }
 
-  /* Reduce card shadows on mobile for performance */
+  /* Reduce card shadows on mobile for GPU performance */
   .glass-panel,
   .project-card,
   .experience-card,
@@ -880,10 +931,56 @@ body {
     border-radius: 20px;
   }
 
-  /* Social icons: slightly smaller for thumb zone */
+  /* Social icons: Apple-standard 44px touch zone */
   .social-icon-btn {
     width: 44px;
     height: 44px;
+  }
+
+  /* Admin page mobile polish */
+  .admin-input {
+    font-size: 16px !important; /* Prevent iOS zoom */
+    padding: 12px 14px;
+    min-height: 48px;
+  }
+
+  .admin-input:focus {
+    box-shadow: 0 0 0 3px rgba(73, 75, 214, 0.1);
+  }
+
+  .admin-tab {
+    min-height: 44px;
+  }
+
+  .admin-label {
+    font-size: 11px;
+  }
+
+  .admin-section-title {
+    font-size: 14px;
+  }
+
+  .admin-delete-btn {
+    padding: 8px 14px;
+    min-height: 40px;
+  }
+
+  .admin-header-card {
+    border-radius: 20px;
+  }
+
+  .admin-content-card {
+    border-radius: 20px;
+  }
+
+  .admin-upload-zone {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  /* Bottom save bar safe area */
+  .admin-cms-root > main > div:last-child {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 }
 
@@ -907,5 +1004,28 @@ body {
     padding: 16px;
     border-radius: 18px;
   }
+
+  .admin-content-card {
+    padding: 16px !important;
+  }
+
+  .admin-item-card {
+    padding: 14px;
+  }
+}
+
+/* ── Smooth transition for ALL interactive elements ── */
+a, button, input, textarea, select {
+  transition: color 0.2s var(--apple-ease),
+              background-color 0.2s var(--apple-ease),
+              border-color 0.2s var(--apple-ease),
+              box-shadow 0.2s var(--apple-ease),
+              transform 0.2s var(--apple-ease),
+              opacity 0.2s var(--apple-ease);
+}
+
+/* Prevent overscroll bleed-through on iOS */
+body {
+  overscroll-behavior: none;
 }
 
