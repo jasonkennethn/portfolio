@@ -213,11 +213,12 @@ def download_resume(request):
     else:
         return Response({"error": "Resume file not found"}, status=404)
 
-from django.core.mail import EmailMultiAlternatives
 from django.utils.html import escape
 
-import resend
+import json as _json
 import time as _time
+import urllib.request
+import urllib.error
 
 
 def _build_contact_html(name, sender_email, message):
@@ -287,15 +288,16 @@ def _build_contact_html(name, sender_email, message):
 """
 
 
-def _send_email_via_resend(name, sender_email, message, subject):
+def _send_email_via_brevo(name, sender_email, message, subject):
     """
-    Send an email via Resend HTTP API with retry logic.
+    Send an email via Brevo (Sendinblue) HTTP API with retry logic.
+    Uses Python stdlib — zero external dependencies.
     Returns (success: bool, error_message: str or None)
     """
-    resend.api_key = settings.RESEND_API_KEY
+    api_key = settings.BREVO_API_KEY
 
-    if not resend.api_key or resend.api_key == 're_YOUR_API_KEY_HERE':
-        return False, "Resend API key not configured. Please set RESEND_API_KEY in environment variables."
+    if not api_key or 'your' in api_key.lower():
+        return False, "Brevo API key not configured. Please set BREVO_API_KEY in environment variables."
 
     html_content = _build_contact_html(name, sender_email, message)
 
@@ -309,35 +311,46 @@ Message:
 {message}
 """
 
+    payload = _json.dumps({
+        "sender": {"name": "Portfolio Contact", "email": "celarox.mail@gmail.com"},
+        "to": [{"email": "jasonkennethn@gmail.com", "name": "Jason Kenneth"}],
+        "replyTo": {"email": sender_email, "name": name},
+        "subject": subject,
+        "htmlContent": html_content,
+        "textContent": plain_text,
+    }).encode('utf-8')
+
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
     max_retries = 3
     last_error = None
 
     for attempt in range(1, max_retries + 1):
         try:
-            params = {
-                "from": "Portfolio Contact <onboarding@resend.dev>",
-                "to": ["jasonkennethn@gmail.com"],
-                "subject": subject,
-                "html": html_content,
-                "text": plain_text,
-                "reply_to": sender_email,
-            }
-            email_response = resend.Emails.send(params)
+            req = urllib.request.Request(
+                "https://api.brevo.com/v3/smtp/email",
+                data=payload,
+                headers=headers,
+                method="POST",
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                resp_data = _json.loads(resp.read().decode('utf-8'))
+                msg_id = resp_data.get('messageId', '')
+                print(f"[Brevo] Email sent successfully on attempt {attempt}. MessageId: {msg_id}")
+                return True, None
 
-            # Resend returns an object with an 'id' on success
-            if email_response and getattr(email_response, 'id', None):
-                print(f"[Resend] Email sent successfully on attempt {attempt}. ID: {email_response.id}")
-                return True, None
-            elif isinstance(email_response, dict) and email_response.get('id'):
-                print(f"[Resend] Email sent successfully on attempt {attempt}. ID: {email_response['id']}")
-                return True, None
-            else:
-                last_error = f"Unexpected response: {email_response}"
-                print(f"[Resend] Attempt {attempt} unexpected response: {email_response}")
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode('utf-8', errors='replace')
+            last_error = f"HTTP {e.code}: {error_body}"
+            print(f"[Brevo] Attempt {attempt} failed: {last_error}")
 
         except Exception as e:
             last_error = str(e)
-            print(f"[Resend] Attempt {attempt} failed: {e}")
+            print(f"[Brevo] Attempt {attempt} failed: {e}")
 
         # Wait before retrying (exponential backoff: 1s, 2s, 4s)
         if attempt < max_retries:
@@ -367,8 +380,8 @@ def send_contact_email(request):
         status='pending'
     )
 
-    # 2. Send via Resend HTTP API (with automatic retry)
-    success, error_detail = _send_email_via_resend(name, sender_email, message, email_subject)
+    # 2. Send via Brevo HTTP API (with automatic retry)
+    success, error_detail = _send_email_via_brevo(name, sender_email, message, email_subject)
 
     if success:
         msg_obj.status = 'sent'
@@ -399,7 +412,7 @@ def retry_contact_email(request, pk):
 
     email_subject = msg_obj.subject or f"{msg_obj.name} From Portfolio"
 
-    success, error_detail = _send_email_via_resend(
+    success, error_detail = _send_email_via_brevo(
         msg_obj.name, msg_obj.email, msg_obj.message, email_subject
     )
 

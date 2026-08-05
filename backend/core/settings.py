@@ -114,6 +114,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Resend Email API Configuration (replaces Gmail SMTP — permanent fix for Vercel)
-RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
+# Brevo Email API Configuration (replaces Gmail SMTP — permanent fix for Vercel)
+BREVO_API_KEY = os.getenv('BREVO_API_KEY', '')
 
