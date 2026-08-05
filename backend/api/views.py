@@ -311,8 +311,10 @@ Message:
 {message}
 """
 
+    sender_email_addr = os.getenv('BREVO_SENDER_EMAIL', 'celarox.mail@gmail.com')
+
     payload = _json.dumps({
-        "sender": {"name": "Portfolio Contact", "email": "celarox.mail@gmail.com"},
+        "sender": {"name": "Portfolio Contact", "email": sender_email_addr},
         "to": [{"email": "jasonkennethn@gmail.com", "name": "Jason Kenneth"}],
         "replyTo": {"email": sender_email, "name": name},
         "subject": subject,

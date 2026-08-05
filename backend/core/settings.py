@@ -7,7 +7,7 @@ import cloudinary
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-neon-cloudinary-portfolio-secret-key-2026!')
+SECRET_KEY = os.getenv('SECRET_KEY', '')
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1')
 
@@ -64,7 +64,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database Configuration for NeonDB
-db_url = os.getenv("DATABASE_URL") or "postgresql://neondb_owner:npg_4pz1GTvbXiUr@ep-little-shadow-axcr9sg6-pooler.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+db_url = os.getenv("DATABASE_URL", "")
 tmpPostgres = urlparse(db_url)
 
 DATABASES = {
@@ -80,9 +80,9 @@ DATABASES = {
 }
 
 # Cloudinary Configuration
-CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY', '885837316879991')
-CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET', 'Y_hN1zSD_Omg6fNA8uC4sX0JSuI')
-CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'debezylez')
+CLOUDINARY_API_KEY = os.getenv('CLOUDINARY_API_KEY', '')
+CLOUDINARY_API_SECRET = os.getenv('CLOUDINARY_API_SECRET', '')
+CLOUDINARY_CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', '')
 
 cloudinary.config(
     cloud_name=CLOUDINARY_CLOUD_NAME,
