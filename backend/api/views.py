@@ -216,43 +216,17 @@ def download_resume(request):
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import escape
 
-@api_view(['POST'])
-def send_contact_email(request):
-    name = request.data.get('name', '').strip()
-    sender_email = request.data.get('email', '').strip()
-    message = request.data.get('message', '').strip()
+import resend
+import time as _time
 
-    if not name or not sender_email or not message:
-        return Response({"success": False, "error": "Name, email, and message are required fields."}, status=400)
 
-    # Required default subject format: "<Full Name> From Portfolio"
-    email_subject = f"{name} From Portfolio"
-
-    # 1. Save message to PostgreSQL Database immediately so it's never lost
-    msg_obj = ContactMessage.objects.create(
-        name=name,
-        email=sender_email,
-        subject=email_subject,
-        message=message,
-        status='pending'
-    )
-
-    # Plain text version for email client fallback
-    plain_text_body = f"""New Message From Portfolio Contact Form:
-
-Name: {name}
-Email: {sender_email}
-
-Message:
-{message}
-"""
-
-    # HTML formatted version for rich, executive email layout
+def _build_contact_html(name, sender_email, message):
+    """Build the HTML email body for a contact form submission."""
     safe_name = escape(name)
     safe_email = escape(sender_email)
     safe_message = escape(message).replace('\n', '<br>')
 
-    html_content = f"""
+    return f"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -312,33 +286,134 @@ Message:
 </html>
 """
 
-    from_email = getattr(settings, 'EMAIL_HOST_USER', 'celarox.mail@gmail.com') or 'celarox.mail@gmail.com'
 
-    smtp_success = False
-    try:
-        email = EmailMultiAlternatives(
-            subject=email_subject,
-            body=plain_text_body,
-            from_email=from_email,
-            to=["jasonkennethn@gmail.com"],
-            reply_to=[sender_email]
-        )
-        email.attach_alternative(html_content, "text/html")
-        email.send(fail_silently=False)
-        smtp_success = True
+def _send_email_via_resend(name, sender_email, message, subject):
+    """
+    Send an email via Resend HTTP API with retry logic.
+    Returns (success: bool, error_message: str or None)
+    """
+    resend.api_key = settings.RESEND_API_KEY
+
+    if not resend.api_key or resend.api_key == 're_YOUR_API_KEY_HERE':
+        return False, "Resend API key not configured. Please set RESEND_API_KEY in environment variables."
+
+    html_content = _build_contact_html(name, sender_email, message)
+
+    # Plain text fallback
+    plain_text = f"""New Message From Portfolio Contact Form:
+
+Name: {name}
+Email: {sender_email}
+
+Message:
+{message}
+"""
+
+    max_retries = 3
+    last_error = None
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            params = {
+                "from": "Portfolio Contact <onboarding@resend.dev>",
+                "to": ["jasonkennethn@gmail.com"],
+                "subject": subject,
+                "html": html_content,
+                "text": plain_text,
+                "reply_to": sender_email,
+            }
+            email_response = resend.Emails.send(params)
+
+            # Resend returns an object with an 'id' on success
+            if email_response and getattr(email_response, 'id', None):
+                print(f"[Resend] Email sent successfully on attempt {attempt}. ID: {email_response.id}")
+                return True, None
+            elif isinstance(email_response, dict) and email_response.get('id'):
+                print(f"[Resend] Email sent successfully on attempt {attempt}. ID: {email_response['id']}")
+                return True, None
+            else:
+                last_error = f"Unexpected response: {email_response}"
+                print(f"[Resend] Attempt {attempt} unexpected response: {email_response}")
+
+        except Exception as e:
+            last_error = str(e)
+            print(f"[Resend] Attempt {attempt} failed: {e}")
+
+        # Wait before retrying (exponential backoff: 1s, 2s, 4s)
+        if attempt < max_retries:
+            _time.sleep(2 ** (attempt - 1))
+
+    return False, f"All {max_retries} attempts failed. Last error: {last_error}"
+
+
+@api_view(['POST'])
+def send_contact_email(request):
+    name = request.data.get('name', '').strip()
+    sender_email = request.data.get('email', '').strip()
+    message = request.data.get('message', '').strip()
+
+    if not name or not sender_email or not message:
+        return Response({"success": False, "error": "Name, email, and message are required fields."}, status=400)
+
+    # Required default subject format: "<Full Name> From Portfolio"
+    email_subject = f"{name} From Portfolio"
+
+    # 1. Save message to PostgreSQL Database immediately so it's never lost
+    msg_obj = ContactMessage.objects.create(
+        name=name,
+        email=sender_email,
+        subject=email_subject,
+        message=message,
+        status='pending'
+    )
+
+    # 2. Send via Resend HTTP API (with automatic retry)
+    success, error_detail = _send_email_via_resend(name, sender_email, message, email_subject)
+
+    if success:
         msg_obj.status = 'sent'
         msg_obj.save()
-    except Exception as e:
-        print(f"[SMTP Error] {e}")
+    else:
         msg_obj.status = 'failed'
         msg_obj.save()
+        print(f"[Email Failed] Message #{msg_obj.id}: {error_detail}")
 
     return Response({
         "success": True,
         "message": "Message received! Thank you for reaching out.",
-        "smtp_sent": smtp_success,
+        "smtp_sent": success,
         "id": msg_obj.id
     })
+
+
+@api_view(['POST'])
+def retry_contact_email(request, pk):
+    """Retry sending a failed contact email by its database ID."""
+    try:
+        msg_obj = ContactMessage.objects.get(pk=pk)
+    except ContactMessage.DoesNotExist:
+        return Response({"success": False, "error": "Message not found"}, status=404)
+
+    if msg_obj.status == 'sent':
+        return Response({"success": False, "error": "Message was already sent successfully."}, status=400)
+
+    email_subject = msg_obj.subject or f"{msg_obj.name} From Portfolio"
+
+    success, error_detail = _send_email_via_resend(
+        msg_obj.name, msg_obj.email, msg_obj.message, email_subject
+    )
+
+    if success:
+        msg_obj.status = 'sent'
+        msg_obj.save()
+        return Response({"success": True, "message": f"Message #{pk} resent successfully!"})
+    else:
+        msg_obj.status = 'failed'
+        msg_obj.save()
+        return Response({
+            "success": False,
+            "error": f"Retry failed: {error_detail}"
+        }, status=500)
 
 
 @api_view(['GET'])
@@ -364,4 +439,5 @@ def delete_contact_message(request, pk):
         return Response({"success": False, "error": "Message not found"}, status=404)
     except Exception as e:
         return Response({"success": False, "error": str(e)}, status=500)
+
 

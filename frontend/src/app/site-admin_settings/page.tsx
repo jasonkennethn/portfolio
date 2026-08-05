@@ -32,7 +32,8 @@ import {
   Medal,
   Heart,
   Lightbulb,
-  Mail
+  Mail,
+  RefreshCw
 } from 'lucide-react';
 import { usePortfolio, PortfolioData } from '@/context/PortfolioContext';
 import { getApiBaseUrl } from '@/config/api';
@@ -87,6 +88,26 @@ export default function AdminSettingsPage() {
       }
     } catch (err) {
       console.error('Failed to delete message:', err);
+    }
+  };
+
+  const [retryingId, setRetryingId] = useState<number | null>(null);
+
+  const handleRetryMessage = async (id: number) => {
+    setRetryingId(id);
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/messages/${id}/retry/`, { method: 'POST' });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+      } else {
+        alert(`Retry failed: ${result.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      console.error('Failed to retry message:', err);
+      alert('Retry failed: Network error');
+    } finally {
+      setRetryingId(null);
     }
   };
 
@@ -1329,12 +1350,22 @@ export default function AdminSettingsPage() {
                             <span className="text-xs text-slate-500 ml-2">&lt;{msg.email}&gt;</span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${msg.status === 'sent' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${msg.status === 'sent' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : msg.status === 'failed' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
                               {msg.status}
                             </span>
                             <span className="text-[11px] font-medium text-slate-400">
                               {new Date(msg.created_at).toLocaleString()}
                             </span>
+                            {(msg.status === 'failed' || msg.status === 'pending') && (
+                              <button
+                                onClick={() => handleRetryMessage(msg.id)}
+                                disabled={retryingId === msg.id}
+                                className="p-1.5 rounded-lg text-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Retry sending email"
+                              >
+                                <RefreshCw className={`w-4 h-4 ${retryingId === msg.id ? 'animate-spin' : ''}`} />
+                              </button>
+                            )}
                             <button
                               onClick={() => handleDeleteMessage(msg.id)}
                               className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all cursor-pointer"
